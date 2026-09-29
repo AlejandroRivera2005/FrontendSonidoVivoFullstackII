@@ -6,10 +6,10 @@ function LoginPage(props) {
 
   return (
     <div className="pagina-login-container">
-      <LoginTemplate 
-        tituloFormulario={props.titulo || "¡Bienvenido a Sonido Vivo!"} 
-        onLoginExitoso={manejarLogin}
-      />
+        <LoginTemplate 
+          tituloFormulario={props.titulo || "¡Bienvenido a Sonido Vivo!"} 
+          onLoginExitoso={manejarLogin}
+        />
     </div>
   );
 }
