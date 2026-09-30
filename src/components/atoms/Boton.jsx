@@ -7,6 +7,7 @@ function Boton(props) {
       onClick={props.onClick}
     >
       {props.texto}
+      {props.label}
     </button>
   );
 }
