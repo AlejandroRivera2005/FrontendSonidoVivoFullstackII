@@ -1,66 +1,100 @@
-import { useState } from 'react';
-import FormField from '../molecules/FormField';
-import Boton from '../atoms/Boton';
+import { useState } from "react";
+import FormField from "../molecules/FormField";
+import Boton from "../atoms/Boton";
+import MensajeError from "../atoms/MensajeError";
 
-function LoginForm(props) {
-  const [correo, setCorreo] = useState('');
-  const [contrasena, setContrasena] = useState('');
-  const [error, setError] = useState('');
-  const [mensajeExito, setMensajeExito] = useState('');
+function LoginForm({ onSubmit }) {
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
 
-  function validarCorreo(email) {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  }
+  const [errors, setErrors] = useState({});
 
-  function alEnviarFormulario(evento) {
-    evento.preventDefault();
-    setError('');
-    setMensajeExito('');
+  const handleChange = (e) => {
+    if (!e || !e.target) return;
+    const { name, value } = e.target;
 
-    if (!validarCorreo(correo)) {
-      setError('Por favor, introduce un formato de correo electrónico válido.');
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
+  };
+
+  const validarFormulario = () => {
+    const nuevosErrores = {};
+    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!form.email || !form.email.trim()) {
+      nuevosErrores.email = "El correo electrónico es obligatorio.";
+    } else if (!regexEmail.test(form.email)) {
+      nuevosErrores.email = "Ingresa un correo electrónico válido.";
+    }
+
+    if (!form.password || !form.password.trim()) {
+      nuevosErrores.password = "La contraseña es obligatoria.";
+    }
+
+    return nuevosErrores;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const erroresValidacion = validarFormulario();
+
+    if (Object.keys(erroresValidacion).length > 0) {
+      setErrors(erroresValidacion);
       return;
     }
 
-    if (contrasena.trim() === '') {
-      setError('La contraseña no puede estar vacía.');
-      return;
+    setErrors({});
+    if (onSubmit) {
+      onSubmit(form);
     }
-
-    setMensajeExito(`¡Bienvenido de nuevo, ${correo}!`);
-
-    if (props.onLoginExitoso) {
-      props.onLoginExitoso({ correo, contrasena });
-    }
-  }
+  };
 
   return (
-    <form onSubmit={alEnviarFormulario} className="formulario-login">
-      <h2>{props.titulo || 'Iniciar Sesión'}</h2>
+    <form onSubmit={handleSubmit} noValidate>
+      <div className="mb-3">
+        <p>Ingresa tu Correo electrónico</p>
+        <FormField
+          label="Correo electrónico"
+          type="email"
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+          placeholder="tucorreo@email.com"
+        />
+        <MensajeError mensaje={errors.email} />
+      </div>
 
-      <FormField
-        id="correo"
-        labelTexto="Correo Electrónico"
-        type="email"
-        placeholder="ejemplo@correo.com"
-        value={correo}
-        onChange={(e) => setCorreo(e.target.value)}
-      />
+      <div className="mb-3">
+        <p>Ingresa tu Contraseña</p>
+        <FormField
+          label="Contraseña"
+          type="password"
+          name="password"
+          value={form.password}
+          onChange={handleChange}
+          placeholder="••••••••"
+        />
+        <MensajeError mensaje={errors.password} />
+      </div>
 
-      <FormField
-        id="contrasena"
-        labelTexto="Contraseña"
-        type="password"
-        placeholder="********"
-        value={contrasena}
-        onChange={(e) => setContrasena(e.target.value)}
-      />
-
-      {error && <p>{error}</p>}
-      {mensajeExito && <p>{mensajeExito}</p>}
-
-      <Boton type="submit" texto="Ingresar" className="boton-ingresar" />
+      <div className="mt-4">
+        <Boton
+          label="Iniciar Sesión"
+          variant="primary"
+          type="submit"
+        />
+      </div>
     </form>
   );
 }

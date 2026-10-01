@@ -1,68 +1,79 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Row, Col } from "react-bootstrap";
 import { toast } from "react-toastify";
+import MenuPageTemplate from "../components/templates/MenuPageTemplate";
 import Articulo from "../components/molecules/Articulo";
 import Boton from "../components/atoms/Boton";
 
-function CatalogoPage(props) {
+function CatalogoPage({ productos = [] }) {
   const navigate = useNavigate();
-  const [carrito, setCarrito] = useState([]);
+
+  const [carrito, setCarrito] = useState(() => {
+    try {
+      const guardado = localStorage.getItem("carrito");
+      return guardado ? JSON.parse(guardado) : [];
+    } catch (error) {
+      console.error("Error al cargar localStorage:", error);
+      return [];
+    }
+  });
 
   useEffect(() => {
-    const carritoGuardado = JSON.parse(localStorage.getItem("carrito")) || [];
-    setCarrito(carritoGuardado);
-  }, []);
+    try {
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+    } catch (error) {
+      console.error("Error al guardar en localStorage:", error);
+    }
+  }, [carrito]);
 
-  function alAnadir(articulo) {
-    const carritoActual = JSON.parse(localStorage.getItem("carrito")) || [];
-    const nuevoCarrito = [...carritoActual, articulo];
-    
-    setCarrito(nuevoCarrito);
-    localStorage.setItem("carrito", JSON.stringify(nuevoCarrito));
-    
-    toast.success(`¡"${articulo.nombre}" añadido al carrito!`);
-  }
+  const agregarAlCarrito = (producto) => {
+    if (!producto || !producto.id) return;
 
-  function irAlCheckout() {
-    navigate("/checkout");
-  }
+    setCarrito((prevCarrito) => {
+      const existe = prevCarrito.find((item) => item.id === producto.id);
+      if (existe) {
+        return prevCarrito.map((item) =>
+          item.id === producto.id
+            ? { ...item, cantidad: item.cantidad + 1 }
+            : item
+        );
+      }
+      return [...prevCarrito, { ...producto, cantidad: 1 }];
+    });
 
-  const listaArticulos = props.articulos || [];
+    if (typeof toast !== "undefined" && toast.success) {
+      toast.success(`"${producto.titulo}" agregado al carrito`);
+    }
+  };
+
+  const totalCantidad = carrito.reduce(
+    (acc, item) => acc + (item.cantidad || 1),
+    0
+  );
+
+  const botonCheckout = (
+    <Boton
+      label={`Ir al Checkout (${totalCantidad})`}
+      variant="success"
+      onClick={() => navigate("/checkout")}
+    />
+  );
 
   return (
-    <Container className="py-4">
-      <Row className="mb-4 align-items-center">
-        <Col xs={12} md={8}>
-          <h1 className="fw-bold">Catálogo de productos</h1>
-          <p>En esta sección podrás ver nuestros productos a la venta y gestionar tu compra.</p>
-        </Col>
-        
-        <Col xs={12} md={4} className="text-md-end mt-3 mt-md-0">
-          {carrito.length > 0 && (
-            <Boton 
-              label={`Proceder al Checkout (${carrito.length})`} 
-              variant="primary" 
-              onClick={irAlCheckout} 
-            />
-          )}
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={12} className="mb-3">
-          <h2>Guitarras e Instrumentos</h2>
-        </Col>     
-        {listaArticulos.map((m) => (
-          <Col key={m.id} xs={12} md={6} lg={4} className="mb-3">
-            <Articulo
-              nombre={m.nombre}
-              precio={m.precio}
-              onAnadir={() => alAnadir(m)}
-            />
-          </Col>
-        ))}
-      </Row>
-    </Container>
+    <MenuPageTemplate
+      titulo="Catálogo de Productos"
+      descripcion="Explora nuestra selección de productos disponibles en la tienda."
+      acciones={botonCheckout}
+      items={productos}
+      renderItem={(producto) => (
+        <Articulo
+          titulo={producto.titulo}
+          precio={producto.precio}
+          imagen={producto.imagen}
+          onAgregar={() => agregarAlCarrito(producto)}
+        />
+      )}
+    />
   );
 }
 
