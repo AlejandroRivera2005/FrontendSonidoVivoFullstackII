@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import Navbar from "./components/organisms/Navbar"; 
 import LoginPage from "./pages/LoginPage";
 import StaffLoginPage from "./pages/StaffLoginPage";
@@ -36,6 +37,7 @@ function App() {
           <Route path="/catalogo" element={<CatalogoPage articulos={articulos} />} />
         </Routes>
       </main>
+      <ToastContainer />
     </BrowserRouter>
   );
 }

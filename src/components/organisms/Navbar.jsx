@@ -1,15 +1,29 @@
+import { useNavigate } from 'react-router-dom';
+import { Container, Row, Col } from 'react-bootstrap';
 import NavMenu from '../molecules/NavMenu';
 
+function Navbar({ brandName, menuItems }) {
+  const navigate = useNavigate();
 
-function Navbar(props) {
   return (
-    <header className="navbar-banner">
-      <div className="navbar-container">
-        <div className="navbar-logo">
-          <h1>{props.brandName}</h1>
-        </div>
-        <NavMenu items={props.menuItems} />
-      </div>
+    <header className="navbar-banner sticky-top">
+      <Container>
+        <Row className="align-items-center justify-content-between py-3">        
+          <Col xs={12} md={4} className="text-center text-md-start mb-3 mb-md-0">
+            <h2 
+              className="m-0 text-white" 
+              style={{ cursor: 'pointer', fontSize: '1.4rem', fontWeight: '700' }} 
+              onClick={() => navigate('/')}
+            >
+              {brandName || "Sonido Vivo"}
+            </h2>
+          </Col>
+          <Col xs={12} md={8}>
+            <NavMenu menuItems={menuItems} />
+          </Col>
+
+        </Row>
+      </Container>
     </header>
   );
 }
