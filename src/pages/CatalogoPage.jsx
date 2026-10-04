@@ -5,8 +5,17 @@ import MenuPageTemplate from "../components/templates/MenuPageTemplate";
 import Articulo from "../components/molecules/Articulo";
 import Boton from "../components/atoms/Boton";
 
+const CATEGORIAS = [
+  "Guitarras",
+  "Bajos",
+  "Teclados y pianos",
+  "Baterías",
+  "Equipo de Sonido",
+];
+
 function CatalogoPage({ productos = [] }) {
   const navigate = useNavigate();
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todas");
 
   const [carrito, setCarrito] = useState(() => {
     try {
@@ -51,6 +60,11 @@ function CatalogoPage({ productos = [] }) {
     0
   );
 
+  const productosFiltrados =
+    categoriaSeleccionada === "Todas"
+      ? productos
+      : productos.filter((item) => item.categoria === categoriaSeleccionada);
+
   const botonCheckout = (
     <Boton
       label={`Ir al Checkout (${totalCantidad})`}
@@ -59,12 +73,45 @@ function CatalogoPage({ productos = [] }) {
     />
   );
 
+  const cabeceraConFiltros = (
+    <div>
+      <p className="text-muted mb-3">
+        Explora nuestros instrumentos y equipos organizados por categoría.
+      </p>
+      <div className="d-flex flex-wrap gap-2">
+        <button
+          className={`btn btn-sm ${
+            categoriaSeleccionada === "Todas"
+              ? "btn-primary"
+              : "btn-outline-primary"
+          }`}
+          onClick={() => setCategoriaSeleccionada("Todas")}
+        >
+          Todas las categorías
+        </button>
+        {CATEGORIAS.map((cat) => (
+          <button
+            key={cat}
+            className={`btn btn-sm ${
+              categoriaSeleccionada === cat
+                ? "btn-primary"
+                : "btn-outline-primary"
+            }`}
+            onClick={() => setCategoriaSeleccionada(cat)}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <MenuPageTemplate
       titulo="Catálogo de Productos"
-      descripcion="Explora nuestra selección de productos disponibles en la tienda."
+      descripcion={cabeceraConFiltros}
       acciones={botonCheckout}
-      items={productos}
+      items={productosFiltrados}
       renderItem={(producto) => (
         <Articulo
           titulo={producto.titulo}

@@ -12,10 +12,20 @@ import BlogsPage from "./pages/BlogsPage";
 import CheckoutPage from "./pages/CheckoutPage"
 
 const productos = [
-    { id: 1, titulo: "Producto 1", precio: 10000, imagen: "/assets/hero.png" },
-    { id: 2, titulo: "Producto 2", precio: 15000, imagen: "/assets/hero.png" },
-    { id: 3, titulo: "Producto 3", precio: 20000, imagen: "/assets/hero.png" },
-    { id: 4, titulo: "Producto 4", precio: 25000, imagen: "/assets/hero.png" },
+    { id: 1, titulo: "Guitarra Eléctrica Stratocaster", precio: 350000, categoria: "Guitarras", imagen: "/assets/hero.png" },
+    { id: 2, titulo: "Guitarra Acústica Dreadnought", precio: 180000, categoria: "Guitarras", imagen: "/assets/hero.png" },
+
+    { id: 3, titulo: "Bajo Eléctrico Jazz Bass 4 Cuerdas", precio: 290000, categoria: "Bajos", imagen: "/assets/hero.png" },
+    { id: 4, titulo: "Bajo Activo 5 Cuerdas", precio: 420000, categoria: "Bajos", imagen: "/assets/hero.png" },
+
+    { id: 5, titulo: "Teclado Sintetizador 61 Teclas", precio: 250000, categoria: "Teclados y pianos", imagen: "/assets/hero.png" },
+    { id: 6, titulo: "Piano Digital 88 Teclas Contrapesadas", precio: 680000, categoria: "Teclados y pianos", imagen: "/assets/hero.png" },
+
+    { id: 7, titulo: "Batería Acústica 5 Piezas", precio: 520000, categoria: "Baterías", imagen: "/assets/hero.png" },
+    { id: 8, titulo: "Batería Electrónica Malla", precio: 450000, categoria: "Baterías", imagen: "/assets/hero.png" },
+
+    { id: 9, titulo: "Amplificador de Guitarra 50W", precio: 190000, categoria: "Equipo de Sonido", imagen: "/assets/hero.png" },
+    { id: 10, titulo: "Interfaz de Audio USB 2x2", precio: 120000, categoria: "Equipo de Sonido", imagen: "/assets/hero.png" },
   ];
 
   const publicaciones = [
