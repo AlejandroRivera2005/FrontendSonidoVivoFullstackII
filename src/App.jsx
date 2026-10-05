@@ -33,7 +33,7 @@ const productos = [
       id: 1,
       titulo: "Novedades de la Semana",
       fecha: "2026-03-20",
-      resumen: "Descubre las últimas tendencias e innovaciones de nuestra tienda.",
+      resumen: "Descubre nuestros últimos productos y novedades de nuestra tienda.",
     },
     {
       id: 2,
