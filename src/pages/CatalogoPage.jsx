@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import MenuPageTemplate from "../components/templates/MenuPageTemplate";
 import Articulo from "../components/molecules/Articulo";
+import FiltroCategorias from "../components/molecules/FiltroCategorias";
 import Boton from "../components/atoms/Boton";
 
 const CATEGORIAS = [
@@ -22,7 +23,6 @@ function CatalogoPage({ productos = [] }) {
       const guardado = localStorage.getItem("carrito");
       return guardado ? JSON.parse(guardado) : [];
     } catch (error) {
-      console.error("Error al cargar localStorage:", error);
       return [];
     }
   });
@@ -31,7 +31,6 @@ function CatalogoPage({ productos = [] }) {
     try {
       localStorage.setItem("carrito", JSON.stringify(carrito));
     } catch (error) {
-      console.error("Error al guardar en localStorage:", error);
     }
   }, [carrito]);
 
@@ -73,43 +72,19 @@ function CatalogoPage({ productos = [] }) {
     />
   );
 
-  const cabeceraConFiltros = (
-    <div>
-      <p className="text-muted mb-3">
-        Explora nuestros instrumentos y equipos organizados por categoría.
-      </p>
-      <div className="d-flex flex-wrap gap-2">
-        <button
-          className={`btn btn-sm ${
-            categoriaSeleccionada === "Todas"
-              ? "btn-primary"
-              : "btn-outline-primary"
-          }`}
-          onClick={() => setCategoriaSeleccionada("Todas")}
-        >
-          Todas las categorías
-        </button>
-        {CATEGORIAS.map((cat) => (
-          <button
-            key={cat}
-            className={`btn btn-sm ${
-              categoriaSeleccionada === cat
-                ? "btn-primary"
-                : "btn-outline-primary"
-            }`}
-            onClick={() => setCategoriaSeleccionada(cat)}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-    </div>
+  const componenteFiltros = (
+    <FiltroCategorias
+      categorias={CATEGORIAS}
+      categoriaSeleccionada={categoriaSeleccionada}
+      onSeleccionar={setCategoriaSeleccionada}
+    />
   );
 
   return (
     <MenuPageTemplate
       titulo="Catálogo de Productos"
-      descripcion={cabeceraConFiltros}
+      descripcion="Explora nuestros instrumentos y equipos organizados por categoría."
+      filtros={componenteFiltros}
       acciones={botonCheckout}
       items={productosFiltrados}
       renderItem={(producto) => (

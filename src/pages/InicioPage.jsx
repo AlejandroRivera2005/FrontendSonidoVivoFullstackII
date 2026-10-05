@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import Boton from '../components/atoms/Boton'; // Asegúrate de que la ruta a tu átomo sea correcta
+import Boton from '../components/atoms/Boton';
 
 function InicioPage() {
   const navigate = useNavigate();

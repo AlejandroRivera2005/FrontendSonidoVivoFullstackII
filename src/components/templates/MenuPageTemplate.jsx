@@ -1,6 +1,13 @@
 import { Container, Row, Col } from "react-bootstrap";
 
-function MenuPageTemplate({ titulo, descripcion, acciones, items = [], renderItem }) {
+function MenuPageTemplate({
+  titulo,
+  descripcion,
+  filtros,
+  acciones,
+  items = [],
+  renderItem,
+}) {
   const listaItems = Array.isArray(items) ? items : [];
 
   return (
@@ -16,6 +23,12 @@ function MenuPageTemplate({ titulo, descripcion, acciones, items = [], renderIte
           </Col>
         )}
       </Row>
+
+      {filtros && (
+        <Row className="mb-4">
+          <Col xs={12}>{filtros}</Col>
+        </Row>
+      )}
 
       <Row className="g-4">
         {listaItems.length === 0 ? (
