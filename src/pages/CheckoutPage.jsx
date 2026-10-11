@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import { toast } from "react-toastify";
 import Boton from "../components/atoms/Boton";
 import Selector from "../components/atoms/Selector";
+import { useTituloPagina } from '../hooks/useTituloPagina';
 
 function CheckoutPage() {
+  useTituloPagina('Checkout');
   const navigate = useNavigate();
   const [carrito, setCarrito] = useState([]);
   const [tipoEntrega, setTipoEntrega] = useState("retiro");

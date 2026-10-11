@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import Boton from '../components/atoms/Boton';
+import { useTituloPagina } from '../hooks/useTituloPagina';
 
 function InicioPage() {
   const navigate = useNavigate();
+  useTituloPagina('Inicio')
 
   return (
     <div className="home-container" style={{ textAlign: 'center', padding: '40px' }}>

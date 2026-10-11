@@ -4,8 +4,10 @@ import FormPageTemplate from "../components/templates/FormPageTemplate";
 import FormField from "../components/molecules/FormField";
 import Boton from "../components/atoms/Boton";
 import MensajeError from "../components/atoms/MensajeError";
+import { useTituloPagina } from '../hooks/useTituloPagina';
 
 function ContactoPage() {
+  useTituloPagina('Contacto');
   const [form, setForm] = useState({ nombre: "", email: "", mensaje: "" });
   const [errors, setErrors] = useState({});
 

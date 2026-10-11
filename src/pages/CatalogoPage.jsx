@@ -5,6 +5,7 @@ import MenuPageTemplate from "../components/templates/MenuPageTemplate";
 import Articulo from "../components/molecules/Articulo";
 import FiltroCategorias from "../components/molecules/FiltroCategorias";
 import Boton from "../components/atoms/Boton";
+import { useTituloPagina } from '../hooks/useTituloPagina';
 
 const CATEGORIAS = [
   "Guitarras",
@@ -15,6 +16,7 @@ const CATEGORIAS = [
 ];
 
 function CatalogoPage({ productos = [] }) {
+  useTituloPagina('Catálogo')
   const navigate = useNavigate();
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todas");
 

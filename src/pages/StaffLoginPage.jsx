@@ -1,8 +1,10 @@
 import { toast } from "react-toastify";
 import FormPageTemplate from "../components/templates/FormPageTemplate";
 import LoginForm from "../components/organisms/LoginForm";
+import { useTituloPagina } from '../hooks/useTituloPagina';
 
 function StaffLoginPage() {
+  useTituloPagina('Acceso Staff');
   const handleStaffLogin = (datos) => {
     toast.success(`Acceso de personal concedido para: ${datos.email}`);
   };

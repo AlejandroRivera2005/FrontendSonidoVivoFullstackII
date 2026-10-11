@@ -1,6 +1,9 @@
 import MenuPageTemplate from "../components/templates/MenuPageTemplate";
+import { useTituloPagina } from '../hooks/useTituloPagina';
+
 
 function BlogsPage({ publicaciones = [] }) {
+  useTituloPagina('Blogs')
   return (
     <MenuPageTemplate
       titulo="Blog y Noticias"
