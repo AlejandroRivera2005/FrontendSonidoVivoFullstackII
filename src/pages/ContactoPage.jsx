@@ -54,11 +54,11 @@ function ContactoPage() {
       <form onSubmit={handleSubmit} noValidate>
         <div className="mb-3">
           <FormField
-            label="Nombre"
+            label="Indícanos tu nombre"
             name="nombre"
             value={form.nombre}
             onChange={handleChange}
-            placeholder="Escribe tu nombre"
+            placeholder="Juan Pérez"
           />
           <MensajeError mensaje={errors.nombre} />
         </div>
@@ -77,11 +77,11 @@ function ContactoPage() {
 
         <div className="mb-3">
           <FormField
-            label="Mensaje"
+            label="Introduce tu mensaje"
             name="mensaje"
             value={form.mensaje}
             onChange={handleChange}
-            placeholder="Escribe tu mensaje aquí..."
+            placeholder="..."
           />
           <MensajeError mensaje={errors.mensaje} />
         </div>

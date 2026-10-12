@@ -1,6 +1,5 @@
 import MenuPageTemplate from "../components/templates/MenuPageTemplate";
-import { useTituloPagina } from '../hooks/useTituloPagina';
-
+import { useTituloPagina } from "../hooks/useTituloPagina";
 
 function BlogsPage({ publicaciones = [] }) {
   useTituloPagina('Blogs')

@@ -74,7 +74,6 @@ function App() {
         </Routes>
       </main>
       <Footer />
-      <ToastContainer />
     </BrowserRouter>
   );
 }

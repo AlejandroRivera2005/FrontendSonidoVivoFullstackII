@@ -1,6 +1,6 @@
-import useTituloPagina from '../hooks/useTituloPagina';
-
+import { useTituloPagina } from "../hooks/useTituloPagina";
 function QuienesSomosPage() {
+  
   useTituloPagina('¿Quiénes somos?');
   return (
     <div className="container mt-4">

@@ -63,7 +63,6 @@ function LoginForm({ onSubmit }) {
   return (
     <form onSubmit={handleSubmit} noValidate>
       <div className="mb-3">
-        <p>Ingresa tu Correo electrónico</p>
         <FormField
           label="Correo electrónico"
           type="email"
@@ -76,7 +75,6 @@ function LoginForm({ onSubmit }) {
       </div>
 
       <div className="mb-3">
-        <p>Ingresa tu Contraseña</p>
         <FormField
           label="Contraseña"
           type="password"
