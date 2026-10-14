@@ -1,4 +1,4 @@
-import Boton from "../atoms/Boton";
+import Boton from "../atoms/boton/Boton";
 
 function FiltroCategorias({
   categorias = [],

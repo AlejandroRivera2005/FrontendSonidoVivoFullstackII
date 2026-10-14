@@ -1,7 +1,7 @@
-function Label(props) {
+function Label({ htmlFor, texto, className = "form-label fw-semibold" }) {
   return (
-    <label htmlFor={props.htmlFor} className={props.className}>
-      {props.texto}
+    <label htmlFor={htmlFor} className={className}>
+      {texto}
     </label>
   );
 }

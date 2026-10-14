@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import Boton from '../components/atoms/Boton';
+import Boton from '../components/atoms/boton/Boton';
 import { useTituloPagina } from '../hooks/useTituloPagina';
 
 function InicioPage() {

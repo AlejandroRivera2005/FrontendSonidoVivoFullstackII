@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "nombre": "Guitarra Ibañez Stratocaster",
+    "precio": 430000,
+    "categoria": "Guitarras",
+    "stock": 12,
+    "descripcion": "Guitarra eléctrica de madera, modelo Stratocaster, con puente tipo Floyd Rose y pastillas humbucker.",
+    "imagen": "/img/guitarra.jpg",
+    "precioAnterior": 600000
+  },
+  {
+    "id": 2,
+    "nombre": "Teclado MIDI 88 teclas Yamaha",
+    "precio": 99990,
+    "categoria": "Teclados",
+    "stock": 5,
+    "descripcion": "Teclado MIDI de 88 teclas con sensibilidad a la presión y conectividad USB.",
+    "imagen": "/img/teclado.jpg",
+    "precioAnterior": null
+  },
+  {
+    "id": 3,
+    "nombre": "Bajo Fender Precision",
+    "precio": 550000,
+    "categoria": "Bajos",
+    "stock": 0,
+    "descripcion": "Bajo eléctrico de madera, modelo Precision, con puente tipo Floyd Rose y pastillas humbucker.",
+    "imagen": "/img/bajo.jpg",
+    "precioAnterior": null
+  },
+  {
+    "id": 7,
+    "nombre": "Parlante Bluetooth",
+    "precio": 34990,
+    "categoria": "Equipo de sonido",
+    "stock": 9,
+    "descripcion": "Parlante portátil resistente al agua, con 10 horas de batería.",
+    "imagen": "/img/parlante.jpg",
+    "precioAnterior": null
+  },
+  {
+    "id": 4,
+    "nombre": "Batería Acústica Tama",
+    "precio": 119990,
+    "categoria": "Baterías",
+    "stock": 8,
+    "descripcion": "Batería acústica de 24 pulgadas con panel IPS, resolución 1920x1080 y 75 Hz.",
+    "imagen": "/img/bateria.jpg",
+    "precioAnterior": 139990
+  }
+]

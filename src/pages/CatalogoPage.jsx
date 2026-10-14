@@ -1,101 +1,122 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import MenuPageTemplate from "../components/templates/MenuPageTemplate";
 import Articulo from "../components/molecules/Articulo";
 import FiltroCategorias from "../components/molecules/FiltroCategorias";
-import Boton from "../components/atoms/Boton";
-import { useTituloPagina } from '../hooks/useTituloPagina';
+import Boton from "../components/atoms/boton/Boton";
+import Input from "../components/atoms/Input";
+import { useProductos } from "../context/ProductosContext";
+import { useCart } from "../context/CarritoContext";
+import { useTituloPagina } from "../hooks/useTituloPagina";
 
-const CATEGORIAS = [
-  "Guitarras",
-  "Bajos",
-  "Teclados y pianos",
-  "Baterías",
-  "Equipo de Sonido",
-];
+function normalizar(texto) {
+  return String(texto ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
 
-function CatalogoPage({ productos = [] }) {
-  useTituloPagina('Catálogo')
-  const navigate = useNavigate();
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todas");
+function filtrarProductos(productos, { texto, categoria }) {
+  const buscado = normalizar(texto);
+  const cat = normalizar(categoria);
 
-  const [carrito, setCarrito] = useState(() => {
-    try {
-      const guardado = localStorage.getItem("carrito");
-      return guardado ? JSON.parse(guardado) : [];
-    } catch (error) {
-      return [];
-    }
+  return productos.filter((p) => {
+    const coincideCategoria = !cat || normalizar(p.categoria) === cat;
+    const coincideTexto =
+      !buscado ||
+      normalizar(`${p.nombre} ${p.descripcion} ${p.categoria}`).includes(buscado);
+    return coincideCategoria && coincideTexto;
   });
+}
 
+
+function CatalogoPage() {
+  const navigate = useNavigate();
+  const params = useParams();
+  const nombre = params.nombre ?? "";
+  const texto = params.texto ?? "";
+
+  const productosCtx = useProductos();
+  const carrito = useCart();
+
+  const [busqueda, setBusqueda] = useState(texto);
   useEffect(() => {
-    try {
-      localStorage.setItem("carrito", JSON.stringify(carrito));
-    } catch (error) {
-    }
-  }, [carrito]);
+    setBusqueda(texto);
+  }, [texto]);
+
+  const visibles = filtrarProductos(productosCtx.productos, { texto, categoria: nombre });
+  const categorias = [...new Set(productosCtx.productos.map((p) => p.categoria))];
+
+  const categoriaActiva = categorias.find((c) => normalizar(c) === normalizar(nombre)) ?? nombre;
+
+  let titulo = "Catálogo completo";
+  if (nombre) titulo = categoriaActiva;
+  if (texto) titulo = `Resultados para "${texto}"`;
+  useTituloPagina(titulo);
 
   const agregarAlCarrito = (producto) => {
-    if (!producto || !producto.id) return;
-
-    setCarrito((prevCarrito) => {
-      const existe = prevCarrito.find((item) => item.id === producto.id);
-      if (existe) {
-        return prevCarrito.map((item) =>
-          item.id === producto.id
-            ? { ...item, cantidad: item.cantidad + 1 }
-            : item
-        );
-      }
-      return [...prevCarrito, { ...producto, cantidad: 1 }];
-    });
-
-    if (typeof toast !== "undefined" && toast.success) {
-      toast.success(`"${producto.titulo}" agregado al carrito`);
+    const agregado = carrito.add(producto);
+    if (agregado) {
+      toast.success(`"${producto.nombre}" agregado al carrito`);
+    } else {
+      toast.warn(`No hay más stock disponible de "${producto.nombre}"`);
     }
   };
 
-  const totalCantidad = carrito.reduce(
-    (acc, item) => acc + (item.cantidad || 1),
-    0
-  );
+  const seleccionarCategoria = (categoria) => {
+    if (categoria === "Todas") navigate("/catalogo");
+    else navigate(`/categoria/${encodeURIComponent(categoria)}`);
+  };
 
-  const productosFiltrados =
-    categoriaSeleccionada === "Todas"
-      ? productos
-      : productos.filter((item) => item.categoria === categoriaSeleccionada);
+  const buscar = (e) => {
+    e.preventDefault();
+    const limpio = busqueda.trim();
+    if (limpio) navigate(`/buscar/${encodeURIComponent(limpio)}`);
+    else navigate("/catalogo");
+  };
 
   const botonCheckout = (
     <Boton
-      label={`Ir al Checkout (${totalCantidad})`}
+      label={`Ir al Checkout (${carrito.totalItems})`}
       variant="success"
       onClick={() => navigate("/checkout")}
     />
   );
 
   const componenteFiltros = (
-    <FiltroCategorias
-      categorias={CATEGORIAS}
-      categoriaSeleccionada={categoriaSeleccionada}
-      onSeleccionar={setCategoriaSeleccionada}
-    />
+    <div className="d-flex flex-column gap-3">
+      <form onSubmit={buscar} role="search" className="d-flex gap-2">
+        <Input
+          id="busqueda"
+          name="busqueda"
+          type="search"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          placeholder="Buscar productos..."
+          aria-label="Buscar productos"
+        />
+        <Boton label="Buscar" variant="primary" type="submit" />
+      </form>
+
+      <FiltroCategorias
+        categorias={categorias}
+        categoriaSeleccionada={nombre ? categoriaActiva : "Todas"}
+        onSeleccionar={seleccionarCategoria}
+      />
+    </div>
   );
 
   return (
     <MenuPageTemplate
-      titulo="Catálogo de Productos"
-      descripcion="Explora nuestros instrumentos y equipos organizados por categoría."
+      titulo={titulo}
+      descripcion="Explora nuestros productos organizados por categoría."
       filtros={componenteFiltros}
       acciones={botonCheckout}
-      items={productosFiltrados}
+      items={visibles}
       renderItem={(producto) => (
-        <Articulo
-          titulo={producto.titulo}
-          precio={producto.precio}
-          imagen={producto.imagen}
-          onAgregar={() => agregarAlCarrito(producto)}
-        />
+        <Articulo producto={producto} onAgregar={agregarAlCarrito} />
       )}
     />
   );

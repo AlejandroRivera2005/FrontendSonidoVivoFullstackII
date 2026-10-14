@@ -1,30 +1,19 @@
 import { useState } from "react";
 import FormField from "../molecules/FormField";
-import Boton from "../atoms/Boton";
-import MensajeError from "../atoms/MensajeError";
+import Boton from "../atoms/boton/Boton";
 
 function LoginForm({ onSubmit }) {
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     if (!e || !e.target) return;
     const { name, value } = e.target;
 
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setForm((prev) => ({ ...prev, [name]: value }));
 
     if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -32,13 +21,13 @@ function LoginForm({ onSubmit }) {
     const nuevosErrores = {};
     const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!form.email || !form.email.trim()) {
+    if (!form.email.trim()) {
       nuevosErrores.email = "El correo electrónico es obligatorio.";
     } else if (!regexEmail.test(form.email)) {
       nuevosErrores.email = "Ingresa un correo electrónico válido.";
     }
 
-    if (!form.password || !form.password.trim()) {
+    if (!form.password.trim()) {
       nuevosErrores.password = "La contraseña es obligatoria.";
     }
 
@@ -55,43 +44,33 @@ function LoginForm({ onSubmit }) {
     }
 
     setErrors({});
-    if (onSubmit) {
-      onSubmit(form);
-    }
+    if (onSubmit) onSubmit(form);
   };
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <div className="mb-3">
-        <FormField
-          label="Correo electrónico"
-          type="email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          placeholder="tucorreo@email.com"
-        />
-        <MensajeError mensaje={errors.email} />
-      </div>
+      <FormField
+        label="Correo electrónico"
+        type="email"
+        name="email"
+        value={form.email}
+        onChange={handleChange}
+        placeholder="tucorreo@email.com"
+        error={errors.email}
+      />
 
-      <div className="mb-3">
-        <FormField
-          label="Contraseña"
-          type="password"
-          name="password"
-          value={form.password}
-          onChange={handleChange}
-          placeholder="••••••••"
-        />
-        <MensajeError mensaje={errors.password} />
-      </div>
+      <FormField
+        label="Contraseña"
+        type="password"
+        name="password"
+        value={form.password}
+        onChange={handleChange}
+        placeholder="••••••••"
+        error={errors.password}
+      />
 
       <div className="mt-4">
-        <Boton
-          label="Iniciar Sesión"
-          variant="primary"
-          type="submit"
-        />
+        <Boton label="Iniciar Sesión" variant="primary" type="submit" />
       </div>
     </form>
   );

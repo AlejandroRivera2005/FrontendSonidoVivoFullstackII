@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
-import Boton from "../atoms/Boton";
+import Boton from "../atoms/boton/Boton";
 
 function Footer() {
   const navigate = useNavigate();

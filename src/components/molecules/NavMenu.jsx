@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import Boton from '../atoms/Boton';
+import Boton from '../atoms/boton/Boton';
 
 function NavMenu({ menuItems }) {
   const navigate = useNavigate();

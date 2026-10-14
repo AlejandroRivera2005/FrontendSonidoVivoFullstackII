@@ -2,8 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import FormPageTemplate from "../components/templates/FormPageTemplate";
 import FormField from "../components/molecules/FormField";
-import Boton from "../components/atoms/Boton";
-import MensajeError from "../components/atoms/MensajeError";
+import Boton from "../components/atoms/boton/Boton";
 import { useTituloPagina } from '../hooks/useTituloPagina';
 
 function ContactoPage() {
@@ -52,39 +51,34 @@ function ContactoPage() {
       descripcion="¿Tienes alguna duda o sugerencia? Déjanos tu mensaje y te responderemos a la brevedad."
     >
       <form onSubmit={handleSubmit} noValidate>
-        <div className="mb-3">
-          <FormField
-            label="Indícanos tu nombre"
-            name="nombre"
-            value={form.nombre}
-            onChange={handleChange}
-            placeholder="Juan Pérez"
-          />
-          <MensajeError mensaje={errors.nombre} />
-        </div>
+        <FormField
+          label="Nombre completo"
+          name="nombre"
+          value={form.nombre}
+          onChange={handleChange}
+          placeholder="Escribe tu nombre"
+          error={errors.nombre}
+        />
 
-        <div className="mb-3">
-          <FormField
-            label="Correo electrónico"
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            placeholder="tucorreo@email.com"
-          />
-          <MensajeError mensaje={errors.email} />
-        </div>
+        <FormField
+          label="Correo electrónico"
+          type="email"
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+          placeholder="tucorreo@email.com"
+          error={errors.email}
+        />
 
-        <div className="mb-3">
-          <FormField
-            label="Introduce tu mensaje"
-            name="mensaje"
-            value={form.mensaje}
-            onChange={handleChange}
-            placeholder="..."
-          />
-          <MensajeError mensaje={errors.mensaje} />
-        </div>
+        <FormField
+          label="Mensaje"
+          type="textarea"
+          name="mensaje"
+          value={form.mensaje}
+          onChange={handleChange}
+          placeholder="Escribe tu mensaje aquí..."
+          error={errors.mensaje}
+        />
 
         <div className="mt-4">
           <Boton label="Enviar Mensaje" variant="primary" type="submit" />

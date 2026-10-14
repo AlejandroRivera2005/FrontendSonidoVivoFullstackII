@@ -1,16 +1,31 @@
-function Input(props) {
-  return (
-    <input
-      id={props.id}
-      name={props.name}
-      type={props.type || 'text'}
-      placeholder={props.placeholder}
-      value={props.value}
-      onChange={props.onChange}
-      className={props.className}
-      required={props.required}
-    />
-  );
+function Input({
+  id,
+  name,
+  type = "text",
+  value,
+  onChange,
+  placeholder,
+  className = "",
+  required,
+  rows = 4,
+  ...rest
+}) {
+  const propsComunes = {
+    id,
+    name,
+    value,
+    onChange,
+    placeholder,
+    required,
+    className: `form-control ${className}`.trim(),
+    ...rest,
+  };
+
+  if (type === "textarea") {
+    return <textarea rows={rows} {...propsComunes} />;
+  }
+
+  return <input type={type} {...propsComunes} />;
 }
 
 export default Input;

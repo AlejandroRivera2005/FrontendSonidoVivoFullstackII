@@ -1,51 +1,54 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import { toast } from "react-toastify";
-import Boton from "../components/atoms/Boton";
+import Boton from "../components/atoms/boton/Boton";
 import Selector from "../components/atoms/Selector";
-import { useTituloPagina } from '../hooks/useTituloPagina';
+import CarritoItem from "../components/molecules/carritoitem/CarritoItem";
+import { useCart } from "../context/CarritoContext";
+import { formatoPrecio } from "../utils/formatoPrecio";
+import { useTituloPagina } from "../hooks/useTituloPagina";
+
+const OPCIONES_ENTREGA = [
+  { value: "retiro", label: "Retiro presencial en tienda" },
+  { value: "envio", label: "Envío a domicilio" },
+];
 
 function CheckoutPage() {
-  useTituloPagina('Checkout');
+  useTituloPagina("Checkout");
   const navigate = useNavigate();
-  const [carrito, setCarrito] = useState([]);
+  const carrito = useCart();
   const [tipoEntrega, setTipoEntrega] = useState("retiro");
+  const [confirmado, setConfirmado] = useState(false);
 
-  const opcionesEntrega = [
-    { value: "retiro", label: "Retiro presencial en tienda" },
-    { value: "envio", label: "Envío a domicilio" }
-  ];
-
-  useEffect(() => {
-    const carritoGuardado = JSON.parse(localStorage.getItem("carrito")) || [];
-    setCarrito(carritoGuardado);
-  }, []);
+  const temporizador = useRef(null);
+  useEffect(() => () => clearTimeout(temporizador.current), []);
 
   const vaciarCarrito = () => {
-    localStorage.removeItem("carrito");
-    setCarrito([]);
+    carrito.vaciar();
     toast.info("El carrito ha sido vaciado.");
   };
 
   const handleFinalizarCompra = (e) => {
     e.preventDefault();
-    if (carrito.length === 0) {
+    if (confirmado) return;
+
+    if (carrito.items.length === 0) {
       toast.error("Tu carrito está vacío.");
       return;
     }
 
-    const mensajeEntrega = tipoEntrega === "retiro" ? "Retiro presencial en tienda seleccionado." : "Envío a acordar seleccionado.";
+    const mensajeEntrega =
+      tipoEntrega === "retiro"
+        ? "Retiro presencial en tienda seleccionado."
+        : "Envío a acordar seleccionado.";
     toast.success(`¡Pedido confirmado con éxito! ${mensajeEntrega}`, {
       autoClose: 3500,
     });
 
-    localStorage.removeItem("carrito");
-    setCarrito([]);
-
-    setTimeout(() => {
-      navigate("/catalogo");
-    }, 3000);
+    setConfirmado(true);
+    carrito.vaciar();
+    temporizador.current = setTimeout(() => navigate("/catalogo"), 3000);
   };
 
   return (
@@ -61,18 +64,18 @@ function CheckoutPage() {
         <Col xs={12} md={6} className="mb-4">
           <div className="p-4 border rounded bg-white shadow-sm">
             <h3 className="mb-3">Método de Entrega</h3>
-            
+
             <form onSubmit={handleFinalizarCompra}>
               <div className="mb-3">
                 <label htmlFor="tipoEntrega" className="form-label fw-bold">
                   Selecciona una opción
                 </label>
-                
+
                 <Selector
                   id="tipoEntrega"
                   value={tipoEntrega}
                   onChange={(e) => setTipoEntrega(e.target.value)}
-                  options={opcionesEntrega}
+                  options={OPCIONES_ENTREGA}
                 />
               </div>
 
@@ -81,14 +84,11 @@ function CheckoutPage() {
                   label="Confirmar Pedido"
                   variant="primary"
                   type="submit"
+                  disabled={confirmado}
                 />
 
-                {carrito.length > 0 && (
-                  <Boton
-                    label="Vaciar Carrito"
-                    variant="text"
-                    onClick={vaciarCarrito}
-                  />
+                {carrito.items.length > 0 && (
+                  <Boton label="Vaciar Carrito" variant="text" onClick={vaciarCarrito} />
                 )}
               </div>
             </form>
@@ -98,21 +98,27 @@ function CheckoutPage() {
         <Col xs={12} md={6}>
           <div className="p-4 border rounded bg-white shadow-sm">
             <h3 className="mb-3">Resumen del Carrito</h3>
-            {carrito.length === 0 ? (
+            {carrito.items.length === 0 ? (
               <p className="text-muted">No hay productos en el carrito actualmente.</p>
             ) : (
               <div>
                 <ul className="list-group mb-3">
-                  {carrito.map((item, index) => (
-                    <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-                      <span>{item.nombre}</span>
-                      <span className="fw-bold">{item.precio}</span>
-                    </li>
+                  {carrito.items.map((item) => (
+                    <CarritoItem
+                      key={item.producto.id}
+                      item={item}
+                      onIncrement={carrito.increment}
+                      onRemove={carrito.remove}
+                    />
                   ))}
                 </ul>
-                <div className="d-flex justify-content-between fw-bold fs-5 mt-3">
+                <div className="d-flex justify-content-between fw-bold mt-3">
                   <span>Total de artículos:</span>
-                  <span>{carrito.length}</span>
+                  <span>{carrito.totalItems}</span>
+                </div>
+                <div className="d-flex justify-content-between fw-bold fs-5 mt-2">
+                  <span>Total a pagar:</span>
+                  <span>{formatoPrecio(carrito.totalPrecio)}</span>
                 </div>
               </div>
             )}
