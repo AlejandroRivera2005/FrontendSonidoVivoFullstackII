@@ -1,4 +1,4 @@
-function Boton(props) {
+export function Boton(props) {
   const variant = props.variant || "primary";
   return (
     <button
