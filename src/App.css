@@ -237,3 +237,10 @@ textarea.form-control {
   border-color: #6c757d;
   color: var(--text-light);
 }
+
+.volver-catalogo-btn {
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  color: var(--primary-color);
+  text-decoration: none;
+}

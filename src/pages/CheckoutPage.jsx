@@ -7,6 +7,7 @@ import Selector from "../components/atoms/Selector";
 import CarritoItem from "../components/molecules/carritoitem/CarritoItem";
 import { useCart } from "../context/CarritoContext";
 import { formatoPrecio } from "../utils/formatoPrecio";
+import { validarCheckout } from "../utils/validaciones";
 import { useTituloPagina } from "../hooks/useTituloPagina";
 
 const OPCIONES_ENTREGA = [
@@ -33,8 +34,9 @@ function CheckoutPage() {
     e.preventDefault();
     if (confirmado) return;
 
-    if (carrito.items.length === 0) {
-      toast.error("Tu carrito está vacío.");
+    const errorCarrito = validarCheckout(carrito.items);
+    if (errorCarrito) {
+      toast.error(errorCarrito);
       return;
     }
 

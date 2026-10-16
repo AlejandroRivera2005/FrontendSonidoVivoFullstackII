@@ -3,7 +3,7 @@ import Boton from "../atoms/boton/Boton";
 import { Precio } from "../atoms/precio/Precio";
 import imagenRespaldo from "../../assets/hero.png";
 
-function Articulo({ producto, onAgregar }) {
+function Articulo({ producto, onVer }) {
   if (!producto) return null;
 
   const { precio, precioAnterior, categoria, imagen, stock } = producto;
@@ -49,10 +49,9 @@ function Articulo({ producto, onAgregar }) {
 
         <div className="mt-auto d-grid">
           <Boton
-            label="Agregar al Carrito"
+            label="Ver producto"
             variant="primary"
-            disabled={sinStock}
-            onClick={() => onAgregar && onAgregar(producto)}
+            onClick={() => onVer && onVer(producto)}
           />
         </div>
       </Card.Body>

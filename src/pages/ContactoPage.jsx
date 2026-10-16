@@ -4,6 +4,7 @@ import FormPageTemplate from "../components/templates/FormPageTemplate";
 import FormField from "../components/molecules/FormField";
 import Boton from "../components/atoms/boton/Boton";
 import { useTituloPagina } from '../hooks/useTituloPagina';
+import { validarFormularioContacto } from "../utils/validaciones";
 
 function ContactoPage() {
   useTituloPagina('Contacto');
@@ -17,24 +18,9 @@ function ContactoPage() {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  const validarFormulario = () => {
-    const nuevosErrores = {};
-    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!form.nombre.trim()) nuevosErrores.nombre = "El nombre es obligatorio.";
-    if (!form.email.trim()) {
-      nuevosErrores.email = "El correo electrónico es obligatorio.";
-    } else if (!regexEmail.test(form.email)) {
-      nuevosErrores.email = "Ingresa un correo electrónico válido.";
-    }
-    if (!form.mensaje.trim()) nuevosErrores.mensaje = "El mensaje es obligatorio.";
-
-    return nuevosErrores;
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    const erroresValidacion = validarFormulario();
+    const erroresValidacion = validarFormularioContacto(form);
     if (Object.keys(erroresValidacion).length > 0) {
       setErrors(erroresValidacion);
       toast.error("Por favor, corrige los errores del formulario.");

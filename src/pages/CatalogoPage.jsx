@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
 import MenuPageTemplate from "../components/templates/MenuPageTemplate";
 import Articulo from "../components/molecules/Articulo";
 import FiltroCategorias from "../components/molecules/FiltroCategorias";
@@ -56,13 +55,8 @@ function CatalogoPage() {
   if (texto) titulo = `Resultados para "${texto}"`;
   useTituloPagina(titulo);
 
-  const agregarAlCarrito = (producto) => {
-    const agregado = carrito.add(producto);
-    if (agregado) {
-      toast.success(`"${producto.nombre}" agregado al carrito`);
-    } else {
-      toast.warn(`No hay más stock disponible de "${producto.nombre}"`);
-    }
+  const verProducto = (producto) => {
+    navigate(`/producto/${producto.id}`);
   };
 
   const seleccionarCategoria = (categoria) => {
@@ -116,7 +110,7 @@ function CatalogoPage() {
       acciones={botonCheckout}
       items={visibles}
       renderItem={(producto) => (
-        <Articulo producto={producto} onAgregar={agregarAlCarrito} />
+        <Articulo producto={producto} onVer={verProducto} />
       )}
     />
   );

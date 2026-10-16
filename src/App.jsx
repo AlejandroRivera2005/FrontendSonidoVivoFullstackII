@@ -12,6 +12,9 @@ import StaffLoginPage from "./pages/StaffLoginPage";
 import ContactoPage from "./pages/ContactoPage";
 import CatalogoPage from "./pages/CatalogoPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import DetalleProductoPage from "./pages/DetalleProductoPage";
+import Error404Page from "./pages/Error404";
+import AdminSonidoVivo from "./pages/AdminSonidoVivo";
 
 const publicaciones = [
   {
@@ -55,12 +58,13 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/staff-login" element={<StaffLoginPage />} />
               <Route path="/contacto" element={<ContactoPage />} />
-
+              <Route path="/producto/:id" element={<DetalleProductoPage />} />
               <Route path="/catalogo" element={<CatalogoPage />} />
               <Route path="/categoria/:nombre" element={<CatalogoPage />} />
               <Route path="/buscar/:texto" element={<CatalogoPage />} />
-
               <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="*" element={<Error404Page />} />
+              <Route path="/admin" element={<AdminSonidoVivo />} />
             </Routes>
           </main>
           <Footer />
