@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Container, Row, Col, Table } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import { toast } from "react-toastify";
 import FormField from "../components/molecules/FormField";
 import Boton from "../components/atoms/boton/Boton";
@@ -8,7 +8,13 @@ import { formatoPrecio } from "../utils/formatoPrecio";
 import { validarFormularioProducto } from "../utils/validaciones";
 import { useTituloPagina } from "../hooks/useTituloPagina";
 
-const FORM_INICIAL = { nombre: "", precio: "" };
+const FORM_INICIAL = {
+  nombre: "",
+  precio: "",
+  categoria: "",
+  stock: "",
+  descripcion: "",
+};
 
 function AdminSonidoVivo() {
   useTituloPagina("Administrar productos");
@@ -17,6 +23,10 @@ function AdminSonidoVivo() {
   const [form, setForm] = useState(FORM_INICIAL);
   const [errors, setErrors] = useState({});
   const [idEditando, setIdEditando] = useState(null);
+
+  const categoriasExistentes = [
+    ...new Set(productosCtx.productos.map((p) => p.categoria).filter(Boolean)),
+  ];
 
   const handleChange = (e) => {
     if (!e || !e.target) return;
@@ -40,13 +50,19 @@ function AdminSonidoVivo() {
       return;
     }
 
-    const datos = { nombre: form.nombre.trim(), precio: Number(form.precio) };
+    const datos = {
+      nombre: form.nombre.trim(),
+      precio: Number(form.precio),
+      categoria: form.categoria.trim(),
+      stock: Number(form.stock),
+      descripcion: form.descripcion.trim(),
+    };
 
     if (idEditando !== null) {
       productosCtx.actualizar(idEditando, datos);
       toast.success(`"${datos.nombre}" actualizado correctamente.`);
     } else {
-      productosCtx.crear({ ...datos, categoria: "Accesorios", stock: 10 });
+      productosCtx.crear(datos);
       toast.success(`"${datos.nombre}" agregado correctamente.`);
     }
     limpiarFormulario();
@@ -54,7 +70,13 @@ function AdminSonidoVivo() {
 
   const editar = (producto) => {
     setIdEditando(producto.id);
-    setForm({ nombre: producto.nombre, precio: String(producto.precio) });
+    setForm({
+      nombre: producto.nombre ?? "",
+      precio: String(producto.precio ?? ""),
+      categoria: producto.categoria ?? "",
+      stock: String(producto.stock ?? ""),
+      descripcion: producto.descripcion ?? "",
+    });
     setErrors({});
   };
 
@@ -76,8 +98,8 @@ function AdminSonidoVivo() {
       </Row>
 
       <Row className="g-4">
-        <Col xs={12} lg={4}>
-          <div className="p-4 border rounded bg-white shadow-sm">
+        <Col xs={12} md={4}>
+          <div className="p-3 p-md-4 border rounded bg-white shadow-sm">
             <h3 className="h5 mb-3">
               {idEditando !== null ? "Editar producto" : "Nuevo producto"}
             </h3>
@@ -103,7 +125,45 @@ function AdminSonidoVivo() {
                 error={errors.precio}
               />
 
-              <div className="d-flex gap-2 mt-4">
+              <FormField
+                label="Categoría"
+                name="categoria"
+                value={form.categoria}
+                onChange={handleChange}
+                placeholder="Categoría del producto"
+                list="categorias-existentes"
+                autoComplete="off"
+                error={errors.categoria}
+              />
+              <datalist id="categorias-existentes">
+                {categoriasExistentes.map((cat) => (
+                  <option key={cat} value={cat} />
+                ))}
+              </datalist>
+
+              <FormField
+                label="Stock"
+                type="number"
+                name="stock"
+                value={form.stock}
+                onChange={handleChange}
+                placeholder="0"
+                min="0"
+                step="1"
+                error={errors.stock}
+              />
+
+              <FormField
+                label="Descripción"
+                type="textarea"
+                name="descripcion"
+                value={form.descripcion}
+                onChange={handleChange}
+                placeholder="Descripción del producto"
+                error={errors.descripcion}
+              />
+
+              <div className="d-flex flex-wrap gap-2 mt-4">
                 <Boton
                   label={idEditando !== null ? "Guardar cambios" : "Agregar producto"}
                   variant="primary"
@@ -117,36 +177,34 @@ function AdminSonidoVivo() {
           </div>
         </Col>
 
-        <Col xs={12} lg={8}>
-          <div className="p-4 border rounded bg-white shadow-sm">
+        <Col xs={12} md={8}>
+          <div className="p-3 p-md-4 border rounded bg-white shadow-sm">
             <h3 className="h5 mb-3">Productos ({productosCtx.productos.length})</h3>
 
             {productosCtx.productos.length === 0 ? (
               <p className="text-muted mb-0">No hay productos registrados.</p>
             ) : (
-              <Table striped responsive className="align-middle mb-0">
-                <thead>
-                  <tr>
-                    <th>Nombre</th>
-                    <th>Precio</th>
-                    <th className="text-end">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {productosCtx.productos.map((p) => (
-                    <tr key={p.id}>
-                      <td>{p.nombre}</td>
-                      <td>{formatoPrecio(p.precio)}</td>
-                      <td className="text-end">
-                        <div className="d-flex gap-2 justify-content-end">
-                          <Boton label="Editar" variant="outline-primary" onClick={() => editar(p)} />
-                          <Boton label="Eliminar" variant="danger" onClick={() => eliminar(p)} />
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
+              <ul className="list-group">
+                {productosCtx.productos.map((p) => (
+                  <li
+                    key={p.id}
+                    className="list-group-item d-flex flex-wrap align-items-center gap-3"
+                  >
+                    <div className="flex-grow-1">
+                      <div className="fw-semibold text-break">{p.nombre}</div>
+                      <small className="text-muted">
+                        {p.categoria}
+                        {typeof p.stock === "number" && ` · ${p.stock} en stock`}
+                      </small>
+                    </div>
+                    <span className="fw-bold">{formatoPrecio(p.precio)}</span>
+                    <div className="d-flex gap-2">
+                      <Boton label="Editar" variant="outline-primary" onClick={() => editar(p)} />
+                      <Boton label="Eliminar" variant="danger" onClick={() => eliminar(p)} />
+                    </div>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
         </Col>

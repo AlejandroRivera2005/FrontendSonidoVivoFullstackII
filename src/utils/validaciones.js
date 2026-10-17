@@ -9,6 +9,10 @@ export const MENSAJES = {
   carritoVacio: "Tu carrito está vacío.",
   precioObligatorio: "El precio es obligatorio.",
   precioInvalido: "El precio debe ser un número mayor o igual a 1.",
+  categoriaObligatoria: "La categoría es obligatoria.",
+  stockObligatorio: "El stock es obligatorio.",
+  stockInvalido: "El stock debe ser un número entero mayor o igual a 0.",
+  descripcionObligatoria: "La descripción es obligatoria.",
 };
 
 export const esVacio = (valor) => !String(valor ?? "").trim();
@@ -37,6 +41,19 @@ export const validarPrecio = (precio) => {
   return "";
 };
 
+export const validarCategoria = (categoria) =>
+  esVacio(categoria) ? MENSAJES.categoriaObligatoria : "";
+
+export const validarStock = (stock) => {
+  if (esVacio(stock)) return MENSAJES.stockObligatorio;
+  const numero = Number(stock);
+  if (!Number.isInteger(numero) || numero < 0) return MENSAJES.stockInvalido;
+  return "";
+};
+
+export const validarDescripcion = (descripcion) =>
+  esVacio(descripcion) ? MENSAJES.descripcionObligatoria : "";
+
 const limpiarErrores = (errores) =>
   Object.fromEntries(Object.entries(errores).filter(([, msg]) => msg));
 
@@ -53,10 +70,19 @@ export const validarFormularioLogin = ({ email, password }) =>
     password: validarPassword(password),
   });
 
-export const validarFormularioProducto = ({ nombre, precio }) =>
+export const validarFormularioProducto = ({
+  nombre,
+  precio,
+  categoria,
+  stock,
+  descripcion,
+}) =>
   limpiarErrores({
     nombre: validarNombre(nombre),
     precio: validarPrecio(precio),
+    categoria: validarCategoria(categoria),
+    stock: validarStock(stock),
+    descripcion: validarDescripcion(descripcion),
   });
 
 export const validarCheckout = (items) =>
