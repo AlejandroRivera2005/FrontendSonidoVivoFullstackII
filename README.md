@@ -30,3 +30,6 @@ npm run dev
 ## Material complementario
 Carpeta de Drive con documentos del semestre (ERS y otros):
 https://drive.google.com/drive/folders/XXXXXXXXXX
+
+## URL de la página
+http://32.194.33.233:5173/
