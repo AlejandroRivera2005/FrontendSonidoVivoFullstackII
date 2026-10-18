@@ -6,11 +6,12 @@ import Boton from "../components/atoms/boton/Boton";
 import Selector from "../components/atoms/Selector";
 import CarritoItem from "../components/molecules/carritoitem/CarritoItem";
 import { useCart } from "../context/CarritoContext";
+import { useProductos } from "../context/ProductosContext";
 import { formatoPrecio } from "../utils/formatoPrecio";
 import { validarCheckout } from "../utils/validaciones";
 import { useTituloPagina } from "../hooks/useTituloPagina";
 
-const OPCIONES_ENTREGA = [
+const opciones_entrega = [
   { value: "retiro", label: "Retiro presencial en tienda" },
   { value: "envio", label: "Envío a domicilio" },
 ];
@@ -19,6 +20,7 @@ function CheckoutPage() {
   useTituloPagina("Checkout");
   const navigate = useNavigate();
   const carrito = useCart();
+  const { productos } = useProductos();
   const [tipoEntrega, setTipoEntrega] = useState("retiro");
   const [confirmado, setConfirmado] = useState(false);
 
@@ -37,6 +39,20 @@ function CheckoutPage() {
     const errorCarrito = validarCheckout(carrito.items);
     if (errorCarrito) {
       toast.error(errorCarrito);
+      return;
+    }
+
+    const itemConProblema = carrito.items.find((item) => {
+      const actual = productos.find((p) => p.id === item.producto.id);
+      return (
+        !actual ||
+        (typeof actual.stock === "number" && item.cantidad > actual.stock)
+      );
+    });
+    if (itemConProblema) {
+      toast.error(
+        `"${itemConProblema.producto.nombre}" ya no está disponible en la cantidad solicitada.`
+      );
       return;
     }
 
@@ -77,7 +93,7 @@ function CheckoutPage() {
                   id="tipoEntrega"
                   value={tipoEntrega}
                   onChange={(e) => setTipoEntrega(e.target.value)}
-                  options={OPCIONES_ENTREGA}
+                  options={opciones_entrega}
                 />
               </div>
 

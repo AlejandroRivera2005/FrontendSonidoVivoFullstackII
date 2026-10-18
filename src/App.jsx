@@ -15,6 +15,8 @@ import CheckoutPage from "./pages/CheckoutPage";
 import DetalleProductoPage from "./pages/DetalleProductoPage";
 import Error404Page from "./pages/Error404";
 import AdminSonidoVivo from "./pages/AdminSonidoVivo";
+import PedidosSonidoVivo from "./pages/PedidosSonidoVivo";
+import { PedidosProvider } from "./context/PedidoContext";
 
 const publicaciones = [
   {
@@ -48,6 +50,7 @@ function App() {
   return (
     <BrowserRouter>
       <ProductosProvider>
+      <PedidosProvider>
         <ProveedorCarrito>
           <Navbar brandName="Sonido Vivo" menuItems={navigationConfig} />
           <main style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
@@ -65,11 +68,13 @@ function App() {
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="*" element={<Error404Page />} />
               <Route path="/admin" element={<AdminSonidoVivo />} />
+              <Route path="/pedidos" element={<PedidosSonidoVivo />} />
             </Routes>
           </main>
           <Footer />
           <ToastContainer />
-        </ProveedorCarrito>
+        </ProveedorCarrito>    
+      </PedidosProvider>
       </ProductosProvider>
     </BrowserRouter>
   );

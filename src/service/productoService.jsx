@@ -1,13 +1,13 @@
 import productosIniciales from '../data/productos.json'
 
-const CLAVE = 'productos'
-const CLAVE_VERSION = 'productos_version'
-const VERSION = 1
+const clave = 'productos'
+const clave_version = 'productos_version'
+const version = 1
 
 function reiniciar() {
   try {
-    localStorage.setItem(CLAVE, JSON.stringify(productosIniciales))
-    localStorage.setItem(CLAVE_VERSION, String(VERSION))
+    localStorage.setItem(clave, JSON.stringify(productosIniciales))
+    localStorage.setItem(clave_version, String(version))
   } catch {
   }
   return [...productosIniciales]
@@ -15,10 +15,10 @@ function reiniciar() {
 
 function leer() {
   try {
-    const guardado = localStorage.getItem(CLAVE)
-    const version = localStorage.getItem(CLAVE_VERSION)
+    const guardado = localStorage.getItem(clave)
+    const versionGuardada = localStorage.getItem(clave_version)
 
-    if (guardado === null || version !== String(VERSION)) return reiniciar()
+    if (guardado === null || versionGuardada !== String(version)) return reiniciar()
 
     const lista = JSON.parse(guardado)
     return Array.isArray(lista) ? lista : reiniciar()
@@ -29,7 +29,7 @@ function leer() {
 
 function guardar(lista) {
   try {
-    localStorage.setItem(CLAVE, JSON.stringify(lista))
+    localStorage.setItem(clave, JSON.stringify(lista))
   } catch {
   }
 }

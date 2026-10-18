@@ -2,11 +2,11 @@ import { createContext, useContext, useEffect, useState } from 'react'
 
 const CarritoContext = createContext(null)
 
-const CLAVE = 'carrito_v2'
+const clave = 'carrito_v2'
 
 function leerCarrito() {
   try {
-    const guardado = JSON.parse(localStorage.getItem(CLAVE))
+    const guardado = JSON.parse(localStorage.getItem(clave))
     if (!Array.isArray(guardado)) return []
     return guardado.filter(
       (i) => i && i.producto && i.producto.id !== undefined && Number.isInteger(i.cantidad) && i.cantidad > 0,
@@ -26,7 +26,7 @@ export function ProveedorCarrito(props) {
 
   useEffect(() => {
     try {
-      localStorage.setItem(CLAVE, JSON.stringify(items))
+      localStorage.setItem(clave, JSON.stringify(items))
     } catch {
     }
   }, [items])

@@ -1,6 +1,6 @@
-export const REGEX_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export const regex_email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export const MENSAJES = {
+export const mensajes = {
   nombreObligatorio: "El nombre es obligatorio.",
   emailObligatorio: "El correo electrónico es obligatorio.",
   emailInvalido: "Ingresa un correo electrónico válido.",
@@ -13,46 +13,50 @@ export const MENSAJES = {
   stockObligatorio: "El stock es obligatorio.",
   stockInvalido: "El stock debe ser un número entero mayor o igual a 0.",
   descripcionObligatoria: "La descripción es obligatoria.",
+  totalObligatorio: "El total es obligatorio.",
+  totalInvalido: "El total debe ser un número mayor o igual a 1.",
+  cantidadObligatoria: "La cantidad es obligatoria.",
+  cantidadInvalida: "La cantidad debe ser un número entero mayor o igual a 1.",
 };
 
 export const esVacio = (valor) => !String(valor ?? "").trim();
 
-export const esEmailValido = (email) => REGEX_EMAIL.test(email);
+export const esEmailValido = (email) => regex_email.test(email);
 
 export const validarEmail = (email) => {
-  if (esVacio(email)) return MENSAJES.emailObligatorio;
-  if (!esEmailValido(email)) return MENSAJES.emailInvalido;
+  if (esVacio(email)) return mensajes.emailObligatorio;
+  if (!esEmailValido(email)) return mensajes.emailInvalido;
   return "";
 };
 
 export const validarNombre = (nombre) =>
-  esVacio(nombre) ? MENSAJES.nombreObligatorio : "";
+  esVacio(nombre) ? mensajes.nombreObligatorio : "";
 
 export const validarMensaje = (mensaje) =>
-  esVacio(mensaje) ? MENSAJES.mensajeObligatorio : "";
+  esVacio(mensaje) ? mensajes.mensajeObligatorio : "";
 
 export const validarPassword = (password) =>
-  esVacio(password) ? MENSAJES.passwordObligatoria : "";
+  esVacio(password) ? mensajes.passwordObligatoria : "";
 
 export const validarPrecio = (precio) => {
-  if (esVacio(precio)) return MENSAJES.precioObligatorio;
+  if (esVacio(precio)) return mensajes.precioObligatorio;
   const numero = Number(precio);
-  if (!Number.isFinite(numero) || numero < 1) return MENSAJES.precioInvalido;
+  if (!Number.isFinite(numero) || numero < 1) return mensajes.precioInvalido;
   return "";
 };
 
 export const validarCategoria = (categoria) =>
-  esVacio(categoria) ? MENSAJES.categoriaObligatoria : "";
+  esVacio(categoria) ? mensajes.categoriaObligatoria : "";
 
 export const validarStock = (stock) => {
-  if (esVacio(stock)) return MENSAJES.stockObligatorio;
+  if (esVacio(stock)) return mensajes.stockObligatorio;
   const numero = Number(stock);
-  if (!Number.isInteger(numero) || numero < 0) return MENSAJES.stockInvalido;
+  if (!Number.isInteger(numero) || numero < 0) return mensajes.stockInvalido;
   return "";
 };
 
 export const validarDescripcion = (descripcion) =>
-  esVacio(descripcion) ? MENSAJES.descripcionObligatoria : "";
+  esVacio(descripcion) ? mensajes.descripcionObligatoria : "";
 
 const limpiarErrores = (errores) =>
   Object.fromEntries(Object.entries(errores).filter(([, msg]) => msg));
@@ -70,6 +74,20 @@ export const validarFormularioLogin = ({ email, password }) =>
     password: validarPassword(password),
   });
 
+  export const validarTotal = (total) => {
+  if (esVacio(total)) return mensajes.totalObligatorio;
+  const numero = Number(total);
+  if (!Number.isFinite(numero) || numero < 1) return mensajes.totalInvalido;
+  return "";
+};
+
+export const validarCantidad = (cantidad) => {
+  if (esVacio(cantidad)) return mensajes.cantidadObligatoria;
+  const numero = Number(cantidad);
+  if (!Number.isInteger(numero) || numero < 1) return mensajes.cantidadInvalida;
+  return "";
+};
+
 export const validarFormularioProducto = ({
   nombre,
   precio,
@@ -77,6 +95,7 @@ export const validarFormularioProducto = ({
   stock,
   descripcion,
 }) =>
+
   limpiarErrores({
     nombre: validarNombre(nombre),
     precio: validarPrecio(precio),
@@ -85,5 +104,12 @@ export const validarFormularioProducto = ({
     descripcion: validarDescripcion(descripcion),
   });
 
+  export const validarFormularioPedido = ({ nombre, total, cantidad }) =>
+  limpiarErrores({
+    nombre: validarNombre(nombre),
+    total: validarTotal(total),
+    cantidad: validarCantidad(cantidad),
+  });
+
 export const validarCheckout = (items) =>
-  !items || items.length === 0 ? MENSAJES.carritoVacio : "";
+  !items || items.length === 0 ? mensajes.carritoVacio : "";

@@ -10,6 +10,7 @@ import imagenRespaldo from "../assets/hero.png";
 
 function DetalleProductoPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams();
   const { productos } = useProductos();
   const carrito = useCart();
@@ -48,14 +49,20 @@ function DetalleProductoPage() {
     }
   };
 
+  const volver = () => {
+  if (location.key !== "default") navigate(-1); 
+  else navigate("/catalogo");                 
+};
+
   return (
     <Container className="py-4">
       <Row className="mb-3">
         <Col xs={12}>
-          <Boton className="volver-catalogo-btn"
+          <Boton
+            className="volver-catalogo-btn"
             label="← Volver al catálogo"
             variant="text"
-            onClick={() => navigate(-1)}
+            onClick={volver}
           />
         </Col>
       </Row>

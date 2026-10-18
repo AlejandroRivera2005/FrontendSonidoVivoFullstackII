@@ -25,7 +25,7 @@
     "precio": 550000,
     "categoria": "Bajos",
     "stock": 0,
-    "descripcion": "Bajo eléctrico de madera, modelo Precision, con puente tipo Floyd Rose y pastillas humbucker.",
+    "descripcion": "Bajo eléctrico modelo Precision, con cuerpo de madera y pastilla de bobina dividida.",
     "imagen": "/img/bajo.jpg",
     "precioAnterior": null
   },
@@ -45,7 +45,7 @@
     "precio": 119990,
     "categoria": "Baterías",
     "stock": 8,
-    "descripcion": "Batería acústica de 24 pulgadas con panel IPS, resolución 1920x1080 y 75 Hz.",
+    "descripcion": "Batería acústica con bombo de 24 pulgadas, ideal para ensayo y estudio.",
     "imagen": "/img/bateria.jpg",
     "precioAnterior": 139990
   }

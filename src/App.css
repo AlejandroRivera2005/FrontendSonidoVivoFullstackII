@@ -238,9 +238,15 @@ textarea.form-control {
   color: var(--text-light);
 }
 
-.volver-catalogo-btn {
+.volver-catalogo-btn,
+.volver-catalogo-btn:hover,
+.volver-catalogo-btn:focus {
   margin-bottom: 20px;
   font-size: 0.95rem;
   color: var(--primary-color);
   text-decoration: none;
+}
+
+.volver-catalogo-btn:hover {
+  background: rgba(31, 64, 104, 0.08);
 }
