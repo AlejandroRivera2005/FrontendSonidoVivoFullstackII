@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "nombre": "Camila Rojas",
+    "email": "camila.rojas@email.com",
+    "password": "camila123"
+  },
+  {
+    "id": 2,
+    "nombre": "Diego Fuentes",
+    "email": "diego.fuentes@email.com",
+    "password": "diego123"
+  },
+  {
+    "id": 3,
+    "nombre": "Valentina Soto",
+    "email": "valentina.soto@email.com",
+    "password": "valentina123"
+  }
+]

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col } from 'react-bootstrap';
 import NavMenu from '../molecules/NavMenu';
 
-function Navbar({ brandName, menuItems }) {
+function Navbar({ brandName, menuItems, brandPath = '/' }) {
   const navigate = useNavigate();
 
   return (
@@ -13,7 +13,7 @@ function Navbar({ brandName, menuItems }) {
             <h2 
               className="m-0 text-white" 
               style={{ cursor: 'pointer', fontSize: '1.4rem', fontWeight: '700' }} 
-              onClick={() => navigate('/')}
+              onClick={() => navigate(brandPath)}
             >
               {brandName || "Sonido Vivo"}
             </h2>

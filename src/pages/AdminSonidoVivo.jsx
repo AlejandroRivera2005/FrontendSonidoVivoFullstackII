@@ -8,7 +8,7 @@ import { formatoPrecio } from "../utils/formatoPrecio";
 import { validarFormularioProducto } from "../utils/validaciones";
 import { useTituloPagina } from "../hooks/useTituloPagina";
 
-const FORM_INICIAL = {
+const form_inicial = {
   nombre: "",
   precio: "",
   categoria: "",
@@ -20,7 +20,7 @@ function AdminSonidoVivo() {
   useTituloPagina("Administrar productos");
   const productosCtx = useProductos();
 
-  const [form, setForm] = useState(FORM_INICIAL);
+  const [form, setForm] = useState(form_inicial);
   const [errors, setErrors] = useState({});
   const [idEditando, setIdEditando] = useState(null);
 

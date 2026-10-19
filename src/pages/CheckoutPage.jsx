@@ -4,11 +4,22 @@ import { Container, Row, Col } from "react-bootstrap";
 import { toast } from "react-toastify";
 import Boton from "../components/atoms/boton/Boton";
 import Selector from "../components/atoms/Selector";
+import FormField from "../components/molecules/FormField";
 import CarritoItem from "../components/molecules/carritoitem/CarritoItem";
 import { useCart } from "../context/CarritoContext";
 import { useProductos } from "../context/ProductosContext";
+import { usePedidos } from "../context/PedidoContext";
 import { formatoPrecio } from "../utils/formatoPrecio";
-import { validarCheckout } from "../utils/validaciones";
+import {
+  formatoNumeroTarjeta,
+  formatoVencimiento,
+  formatoCvc,
+} from "../utils/formatoPago";
+import {
+  validarCheckout,
+  validarFormularioEnvio,
+  validarFormularioPago,
+} from "../utils/validaciones";
 import { useTituloPagina } from "../hooks/useTituloPagina";
 
 const opciones_entrega = [
@@ -16,20 +27,64 @@ const opciones_entrega = [
   { value: "envio", label: "Envío a domicilio" },
 ];
 
+const form_inicial = {
+  direccion: "",
+  comuna: "",
+  numeroTarjeta: "",
+  vencimiento: "",
+  cvc: "",
+};
+
+const formateadores = {
+  numeroTarjeta: formatoNumeroTarjeta,
+  vencimiento: formatoVencimiento,
+  cvc: formatoCvc,
+};
+
 function CheckoutPage() {
   useTituloPagina("Checkout");
   const navigate = useNavigate();
   const carrito = useCart();
-  const { productos } = useProductos();
+  const { productos, actualizar: actualizarProducto } = useProductos();
+  const pedidosCtx = usePedidos();
   const [tipoEntrega, setTipoEntrega] = useState("retiro");
+  const [form, setForm] = useState(form_inicial);
+  const [errors, setErrors] = useState({});
   const [confirmado, setConfirmado] = useState(false);
 
   const temporizador = useRef(null);
   useEffect(() => () => clearTimeout(temporizador.current), []);
 
+  const esEnvio = tipoEntrega === "envio";
+
+  const itemsActuales = carrito.items.map((item) => ({
+    ...item,
+    producto: productos.find((p) => p.id === item.producto.id) ?? item.producto,
+  }));
+  const totalActual = itemsActuales.reduce(
+    (suma, item) => suma + item.producto.precio * item.cantidad,
+    0
+  );
+
   const vaciarCarrito = () => {
     carrito.vaciar();
     toast.info("El carrito ha sido vaciado.");
+  };
+
+  const handleChange = (e) => {
+    if (!e || !e.target) return;
+    const { name, value } = e.target;
+    const formatear = formateadores[name] ?? ((v) => v);
+    setForm((prev) => ({ ...prev, [name]: formatear(value) }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const handleEntregaChange = (e) => {
+    const nuevoTipo = e.target.value;
+    setTipoEntrega(nuevoTipo);
+    if (nuevoTipo !== "envio") {
+      setErrors((prev) => ({ ...prev, direccion: "", comuna: "" }));
+    }
   };
 
   const handleFinalizarCompra = (e) => {
@@ -56,15 +111,46 @@ function CheckoutPage() {
       return;
     }
 
-    const mensajeEntrega =
-      tipoEntrega === "retiro"
-        ? "Retiro presencial en tienda seleccionado."
-        : "Envío a acordar seleccionado.";
-    toast.success(`¡Pedido confirmado con éxito! ${mensajeEntrega}`, {
+    const erroresFormulario = {
+      ...(esEnvio ? validarFormularioEnvio(form) : {}),
+      ...validarFormularioPago(form),
+    };
+    if (Object.keys(erroresFormulario).length > 0) {
+      setErrors(erroresFormulario);
+      toast.error("Por favor, corrige los errores del formulario.");
+      return;
+    }
+
+    pedidosCtx.crear({
+      nombre: itemsActuales
+        .map((item) => `${item.producto.nombre} x${item.cantidad}`)
+        .join(", "),
+      total: totalActual,
+      cantidad: carrito.totalItems,
+      entrega: tipoEntrega,
+      ...(esEnvio && {
+        direccion: `${form.direccion.trim()}, ${form.comuna.trim()}`,
+      }),
+    });
+
+    itemsActuales.forEach((item) => {
+      if (typeof item.producto.stock === "number") {
+        actualizarProducto(item.producto.id, {
+          stock: item.producto.stock - item.cantidad,
+        });
+      }
+    });
+
+    const mensajeEntrega = esEnvio
+      ? "Envío a domicilio seleccionado."
+      : "Retiro presencial en tienda seleccionado.";
+    toast.success(`¡Pago realizado y pedido confirmado! ${mensajeEntrega}`, {
       autoClose: 3500,
     });
 
     setConfirmado(true);
+    setForm(form_inicial);
+    setErrors({});
     carrito.vaciar();
     temporizador.current = setTimeout(() => navigate("/catalogo"), 3000);
   };
@@ -74,7 +160,10 @@ function CheckoutPage() {
       <Row className="mb-4">
         <Col xs={12}>
           <h1 className="fw-bold">Finalizar Compra</h1>
-          <p>Selecciona tu método de entrega y revisa los artículos de tu pedido.</p>
+          <p>
+            Selecciona tu método de entrega, ingresa tus datos de pago y revisa los
+            artículos de tu pedido.
+          </p>
         </Col>
       </Row>
 
@@ -83,7 +172,7 @@ function CheckoutPage() {
           <div className="p-4 border rounded bg-white shadow-sm">
             <h3 className="mb-3">Método de Entrega</h3>
 
-            <form onSubmit={handleFinalizarCompra}>
+            <form onSubmit={handleFinalizarCompra} noValidate>
               <div className="mb-3">
                 <label htmlFor="tipoEntrega" className="form-label fw-bold">
                   Selecciona una opción
@@ -92,14 +181,81 @@ function CheckoutPage() {
                 <Selector
                   id="tipoEntrega"
                   value={tipoEntrega}
-                  onChange={(e) => setTipoEntrega(e.target.value)}
+                  onChange={handleEntregaChange}
                   options={opciones_entrega}
                 />
               </div>
 
+              {esEnvio && (
+                <>
+                  <FormField
+                    label="Dirección (calle y número)"
+                    name="direccion"
+                    value={form.direccion}
+                    onChange={handleChange}
+                    placeholder="Av. Libertad 1234, depto 56"
+                    autoComplete="address-line1"
+                    error={errors.direccion}
+                  />
+
+                  <FormField
+                    label="Comuna"
+                    name="comuna"
+                    value={form.comuna}
+                    onChange={handleChange}
+                    placeholder="Viña del Mar"
+                    autoComplete="address-level2"
+                    error={errors.comuna}
+                  />
+                </>
+              )}
+
+              <h3 className="h5 mt-4 mb-3">Método de Pago</h3>
+
+              <FormField
+                label="Número de tarjeta (crédito o débito)"
+                name="numeroTarjeta"
+                value={form.numeroTarjeta}
+                onChange={handleChange}
+                placeholder="1234 5678 9012 3456"
+                inputMode="numeric"
+                autoComplete="cc-number"
+                maxLength={23}
+                error={errors.numeroTarjeta}
+              />
+
+              <Row>
+                <Col xs={12} sm={6}>
+                  <FormField
+                    label="Fecha de caducidad"
+                    name="vencimiento"
+                    value={form.vencimiento}
+                    onChange={handleChange}
+                    placeholder="MM/AA"
+                    inputMode="numeric"
+                    autoComplete="cc-exp"
+                    maxLength={5}
+                    error={errors.vencimiento}
+                  />
+                </Col>
+                <Col xs={12} sm={6}>
+                  <FormField
+                    label="CVC"
+                    type="password"
+                    name="cvc"
+                    value={form.cvc}
+                    onChange={handleChange}
+                    placeholder="•••"
+                    inputMode="numeric"
+                    autoComplete="cc-csc"
+                    maxLength={4}
+                    error={errors.cvc}
+                  />
+                </Col>
+              </Row>
               <div className="d-flex flex-column gap-2 mt-4">
                 <Boton
-                  label="Confirmar Pedido"
+                  label="Pagar"
                   variant="primary"
                   type="submit"
                   disabled={confirmado}
@@ -121,7 +277,7 @@ function CheckoutPage() {
             ) : (
               <div>
                 <ul className="list-group mb-3">
-                  {carrito.items.map((item) => (
+                  {itemsActuales.map((item) => (
                     <CarritoItem
                       key={item.producto.id}
                       item={item}
@@ -136,7 +292,7 @@ function CheckoutPage() {
                 </div>
                 <div className="d-flex justify-content-between fw-bold fs-5 mt-2">
                   <span>Total a pagar:</span>
-                  <span>{formatoPrecio(carrito.totalPrecio)}</span>
+                  <span>{formatoPrecio(totalActual)}</span>
                 </div>
               </div>
             )}
