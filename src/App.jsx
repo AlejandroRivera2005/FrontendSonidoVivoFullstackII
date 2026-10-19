@@ -20,27 +20,8 @@ import Error404Page from "./pages/Error404";
 import AdminSonidoVivo from "./pages/AdminSonidoVivo";
 import PedidosSonidoVivo from "./pages/PedidosSonidoVivo";
 import UsuariosSonidoVivo from "./pages/UsuariosSonidoVivo";
+import DetalleBlog from "./pages/DetalleBlog";
 
-const publicaciones = [
-  {
-    id: 1,
-    titulo: "Novedades de la Semana",
-    fecha: "2026-03-20",
-    resumen: "Descubre nuestros últimos productos y novedades de nuestra tienda.",
-  },
-  {
-    id: 2,
-    titulo: "Guía Práctica de Uso",
-    fecha: "2026-03-18",
-    resumen: "Consejos y recomendaciones para sacarle el máximo provecho a tus productos.",
-  },
-  {
-    id: 3,
-    titulo: "Cuidados y Mantenimiento",
-    fecha: "2026-03-15",
-    resumen: "Aprende cómo alargar la vida útil de tus compras con estos sencillos pasos.",
-  },
-];
 
 const navigationConfig = [
   { label: "Inicio", path: "/", variant: "text" },
@@ -67,7 +48,10 @@ function App() {
             <Route element={<ClienteLayoutTemplate menuItems={navigationConfig} />}>
               <Route path="/" element={<InicioPage />} />
               <Route path="/quienessomos" element={<QuienesSomosPage />} />
-              <Route path="/blogs" element={<BlogsPage publicaciones={publicaciones} />} />
+              <Route path="/blogs" element={<BlogsPage />} />
+              <Route path="/blogs/categoria/:nombre" element={<BlogsPage />} />
+              <Route path="/blogs/buscar/:texto" element={<BlogsPage />} />
+              <Route path="/blog/:id" element={<DetalleBlog />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/registro" element={<RegistroPage />} />
               <Route path="/staff-login" element={<StaffLoginPage />} />

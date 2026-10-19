@@ -1,0 +1,86 @@
+[
+  {
+    "id": 1,
+    "titulo": "Novedades de la Semana",
+    "fecha": "2026-03-20",
+    "categoria": "Novedades",
+    "autor": "Equipo Sonido Vivo",
+    "resumen": "Descubre nuestros últimos productos y novedades de nuestra tienda.",
+    "contenido": [
+      "Esta semana llegaron nuevas guitarras eléctricas, teclados MIDI de 88 teclas y una renovada selección de accesorios para escenario.",
+      "También actualizamos los precios de varias categorías y sumamos ofertas por tiempo limitado en bajos y baterías. Revisa el catálogo para ver el detalle de cada producto.",
+      "Si buscas algo en particular, escríbenos desde la página de contacto y te ayudamos a encontrarlo."
+    ],
+    "imagen": "/img/blog.jpg"
+  },
+  {
+    "id": 2,
+    "titulo": "Guía Práctica de Uso",
+    "fecha": "2026-03-18",
+    "categoria": "Guías",
+    "autor": "Equipo Sonido Vivo",
+    "resumen": "Consejos y recomendaciones para sacarle el máximo provecho a tus productos.",
+    "contenido": [
+      "Antes de usar tu instrumento por primera vez, revisa que todas sus partes estén firmes y que el cableado esté en buen estado.",
+      "Dedica unos minutos a calibrar el sonido: ajusta el volumen, los tonos y la ganancia de forma gradual, sin llegar a los extremos desde el inicio.",
+      "Con práctica constante y un uso cuidadoso, tu equipo mantendrá un rendimiento óptimo durante años."
+    ],
+    "imagen": "/img/blog.jpg"
+  },
+  {
+    "id": 3,
+    "titulo": "Cuidados y Mantenimiento",
+    "fecha": "2026-03-15",
+    "categoria": "Cuidados",
+    "autor": "Equipo Sonido Vivo",
+    "resumen": "Aprende cómo alargar la vida útil de tus compras con estos sencillos pasos.",
+    "contenido": [
+      "Limpia tus instrumentos con un paño suave y seco después de cada uso, evitando productos abrasivos que dañen el acabado.",
+      "Guárdalos en un lugar con temperatura estable y baja humedad. Los cambios bruscos pueden afectar la madera y los componentes electrónicos.",
+      "Realiza una revisión general cada cierto tiempo y cambia las piezas desgastadas antes de que afecten el sonido."
+    ],
+    "imagen": "/img/blog.jpg"
+  },
+  {
+    "id": 4,
+    "titulo": "Cómo elegir tu primer teclado MIDI",
+    "fecha": "2026-03-12",
+    "categoria": "Guías",
+    "autor": "Equipo Sonido Vivo",
+    "resumen": "Teclas, sensibilidad y conectividad: lo que debes mirar antes de comprar.",
+    "contenido": [
+      "El número de teclas define el tipo de música que podrás tocar. Un teclado de 49 o 61 teclas es suficiente para producir; para tocar piano conviene uno de 88.",
+      "La sensibilidad a la presión permite que el volumen cambie según la fuerza con que pulsas cada tecla, algo clave para una interpretación expresiva.",
+      "Por último, revisa la conectividad: la mayoría funciona por USB y se alimenta directamente desde el computador."
+    ],
+    "imagen": "/img/blog.jpg"
+  },
+  {
+    "id": 5,
+    "titulo": "Cuándo cambiar las cuerdas de tu guitarra",
+    "fecha": "2026-03-08",
+    "categoria": "Cuidados",
+    "autor": "Equipo Sonido Vivo",
+    "resumen": "Señales que te avisan que es momento de renovar tu juego de cuerdas.",
+    "contenido": [
+      "Si el sonido se vuelve apagado, la guitarra desafina con facilidad o las cuerdas se sienten ásperas al tacto, es una buena señal de que necesitan cambio.",
+      "La frecuencia depende del uso: quienes tocan a diario suelen cambiarlas cada uno o dos meses.",
+      "Al reemplazarlas, cámbialas una a una para mantener la tensión del puente y el mástil."
+    ],
+    "imagen": "/img/blog.jpg"
+  },
+  {
+    "id": 6,
+    "titulo": "Nuevas baterías acústicas en tienda",
+    "fecha": "2026-03-05",
+    "categoria": "Novedades",
+    "autor": "Equipo Sonido Vivo",
+    "resumen": "Sumamos nuevos modelos de baterías acústicas para estudio y escenario.",
+    "contenido": [
+      "Incorporamos nuevos kits de batería acústica pensados tanto para quienes están comenzando como para músicos con más experiencia.",
+      "Cada modelo incluye sus parches y herrajes, y puedes revisar su disponibilidad directamente en el catálogo.",
+      "Si necesitas ayuda para elegir, visítanos o escríbenos y te asesoramos."
+    ],
+    "imagen": "/img/blog.jpg"
+  }
+]
