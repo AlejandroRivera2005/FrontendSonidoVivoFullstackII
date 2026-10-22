@@ -10,17 +10,10 @@ import { useCart } from "../context/CarritoContext";
 import { useProductos } from "../context/ProductosContext";
 import { usePedidos } from "../context/PedidoContext";
 import { formatoPrecio } from "../utils/formatoPrecio";
-import {
-  formatoNumeroTarjeta,
-  formatoVencimiento,
-  formatoCvc,
-} from "../utils/formatoPago";
-import {
-  validarCheckout,
-  validarFormularioEnvio,
-  validarFormularioPago,
-} from "../utils/validaciones";
+import { formatoNumeroTarjeta, formatoVencimiento, formatoCvc } from "../utils/formatoPago";
+import { mensajes, validarCheckout, validarFormularioEnvio, validarFormularioPago } from "../utils/validaciones";
 import { useTituloPagina } from "../hooks/useTituloPagina";
+import { useSesion } from "../context/SesionContext";
 
 const opciones_entrega = [
   { value: "retiro", label: "Retiro presencial en tienda" },
@@ -47,6 +40,7 @@ function CheckoutPage() {
   const carrito = useCart();
   const { productos, actualizar: actualizarProducto } = useProductos();
   const pedidosCtx = usePedidos();
+  const sesionCtx = useSesion();
   const [tipoEntrega, setTipoEntrega] = useState("retiro");
   const [form, setForm] = useState(form_inicial);
   const [errors, setErrors] = useState({});
@@ -65,6 +59,8 @@ function CheckoutPage() {
     (suma, item) => suma + item.producto.precio * item.cantidad,
     0
   );
+
+  const irALogin = () => navigate("/login", { state: { desde: "/checkout" } });
 
   const vaciarCarrito = () => {
     carrito.vaciar();
@@ -90,6 +86,11 @@ function CheckoutPage() {
   const handleFinalizarCompra = (e) => {
     e.preventDefault();
     if (confirmado) return;
+
+    if (!sesionCtx.usuario) {
+      toast.error(mensajes.sesionRequerida);
+      return;
+    }
 
     const errorCarrito = validarCheckout(carrito.items);
     if (errorCarrito) {
@@ -127,6 +128,7 @@ function CheckoutPage() {
         .join(", "),
       total: totalActual,
       cantidad: carrito.totalItems,
+      usuarioId: sesionCtx.usuario.id,
       entrega: tipoEntrega,
       ...(esEnvio && {
         direccion: `${form.direccion.trim()}, ${form.comuna.trim()}`,
@@ -171,7 +173,16 @@ function CheckoutPage() {
         <Col xs={12} md={6} className="mb-4">
           <div className="p-4 border rounded bg-white shadow-sm">
             <h3 className="mb-3">Método de Entrega</h3>
-
+            {sesionCtx.usuario ? (
+              <p className="text-muted mb-3">
+                Comprando como <strong>{sesionCtx.usuario.nombre}</strong> ({sesionCtx.usuario.email}).
+              </p>
+            ) : (
+              <div className="alert alert-warning d-flex flex-column gap-2">
+                <span>{mensajes.sesionRequerida}</span>
+                <Boton label="Iniciar sesión" variant="primary" onClick={irALogin} />
+              </div>
+            )}
             <form onSubmit={handleFinalizarCompra} noValidate>
               <div className="mb-3">
                 <label htmlFor="tipoEntrega" className="form-label fw-bold">

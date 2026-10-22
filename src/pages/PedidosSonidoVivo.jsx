@@ -2,13 +2,18 @@ import { useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { toast } from "react-toastify";
 import FormField from "../components/molecules/FormField";
+import Label from "../components/atoms/Label";
+import MensajeError from "../components/atoms/MensajeError";
+import Selector from "../components/atoms/Selector";
 import Boton from "../components/atoms/boton/Boton";
 import { usePedidos } from "../context/PedidoContext";
+import { useUsuarios } from "../context/UsuarioContext";
 import { formatoPrecio } from "../utils/formatoPrecio";
 import { validarFormularioPedido } from "../utils/validaciones";
 import { useTituloPagina } from "../hooks/useTituloPagina";
 
 const form_inicial = {
+  usuarioId: "",
   nombre: "",
   total: "",
   cantidad: "",
@@ -17,10 +22,25 @@ const form_inicial = {
 function PedidosSonidoVivo() {
   useTituloPagina("Administrar pedidos");
   const pedidosCtx = usePedidos();
+  const usuariosCtx = useUsuarios();
 
   const [form, setForm] = useState(form_inicial);
   const [errors, setErrors] = useState({});
   const [idEditando, setIdEditando] = useState(null);
+
+  const opciones_usuarios = [
+    { value: "", label: "Selecciona un usuario" },
+    ...usuariosCtx.usuarios.map((u) => ({
+      value: String(u.id),
+      label: `${u.nombre} (${u.email})`,
+    })),
+  ];
+
+  const textoUsuario = (pedido) => {
+    if (pedido.usuarioId === undefined) return "Sin usuario asignado";
+    const usuario = usuariosCtx.usuarios.find((u) => u.id === pedido.usuarioId);
+    return usuario ? `${usuario.nombre} (${usuario.email})` : "Usuario eliminado";
+  };
 
   const handleChange = (e) => {
     if (!e || !e.target) return;
@@ -45,6 +65,7 @@ function PedidosSonidoVivo() {
     }
 
     const datos = {
+      usuarioId: Number(form.usuarioId),
       nombre: form.nombre.trim(),
       total: Number(form.total),
       cantidad: Number(form.cantidad),
@@ -63,6 +84,7 @@ function PedidosSonidoVivo() {
   const editar = (pedido) => {
     setIdEditando(pedido.id);
     setForm({
+      usuarioId: String(pedido.usuarioId ?? ""),
       nombre: pedido.nombre ?? "",
       total: String(pedido.total ?? ""),
       cantidad: String(pedido.cantidad ?? ""),
@@ -95,6 +117,18 @@ function PedidosSonidoVivo() {
             </h3>
 
             <form onSubmit={handleSubmit} noValidate>
+              <div className="mb-3">
+                <Label texto="Usuario" htmlFor="usuarioId" />
+                <Selector
+                  id="usuarioId"
+                  name="usuarioId"
+                  value={form.usuarioId}
+                  onChange={handleChange}
+                  options={opciones_usuarios}
+                />
+                <MensajeError mensaje={errors.usuarioId} />
+              </div>
+
               <FormField
                 label="Producto"
                 name="nombre"
@@ -156,6 +190,9 @@ function PedidosSonidoVivo() {
                   >
                     <div className="flex-grow-1">
                       <div className="fw-semibold text-break">{p.nombre}</div>
+                      <small className="text-muted text-break d-block">
+                        Usuario: {textoUsuario(p)}
+                      </small>
                       <small className="text-muted">
                         {typeof p.cantidad === "number" && `Cantidad: ${p.cantidad}`}
                       </small>

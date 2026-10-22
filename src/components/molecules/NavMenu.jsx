@@ -12,7 +12,7 @@ function NavMenu({ menuItems }) {
           key={index}
           label={item.label}
           variant={item.variant || "text"}
-          onClick={() => navigate(item.path)}
+          onClick={() => (item.onClick ? item.onClick() : navigate(item.path))}
         />
       ))}
     </div>

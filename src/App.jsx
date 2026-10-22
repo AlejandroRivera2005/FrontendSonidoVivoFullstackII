@@ -4,6 +4,7 @@ import { ProductosProvider } from "./context/ProductosContext";
 import { ProveedorCarrito } from "./context/CarritoContext";
 import { PedidosProvider } from "./context/PedidoContext";
 import { UsuariosProvider } from "./context/UsuarioContext";
+import { SesionProvider } from "./context/SesionContext";
 import ClienteLayoutTemplate from "./components/templates/ClienteLayoutTemplate";
 import AdminLayoutTemplate from "./components/templates/AdminLayoutTemplate";
 import InicioPage from "./pages/InicioPage";
@@ -26,8 +27,8 @@ import DetalleBlog from "./pages/DetalleBlog";
 const navigationConfig = [
   { label: "Inicio", path: "/", variant: "text" },
   { label: "Catálogo", path: "/catalogo", variant: "text" },
-  { label: "Iniciar sesión", path: "/login", variant: "text" },
-  { label: "Registrarse", path: "/registro", variant: "text" },
+  { label: "Iniciar sesión", path: "/login", variant: "text", soloInvitado: true },
+  { label: "Registrarse", path: "/registro", variant: "text", soloInvitado: true },
   { label: "STAFF", path: "/staff-login", variant: "text" },
 ];
 
@@ -43,6 +44,7 @@ function App() {
       <ProductosProvider>
       <PedidosProvider>
       <UsuariosProvider>
+      <SesionProvider>
         <ProveedorCarrito>
           <Routes>
             <Route element={<ClienteLayoutTemplate menuItems={navigationConfig} />}>
@@ -72,6 +74,7 @@ function App() {
           </Routes>
           <ToastContainer />
         </ProveedorCarrito>
+      </SesionProvider>
       </UsuariosProvider>
       </PedidosProvider>
       </ProductosProvider>

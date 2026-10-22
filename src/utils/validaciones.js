@@ -31,6 +31,9 @@ export const mensajes = {
   confirmarPasswordObligatoria: "Debes confirmar la contraseña.",
   passwordsNoCoinciden: "Las contraseñas no coinciden.",
   emailDuplicado: "Ya existe un usuario registrado con este correo.",
+  usuarioObligatorio: "Debes seleccionar un usuario.",
+  credencialesInvalidas: "Correo o contraseña incorrectos.",
+  sesionRequerida: "Debes iniciar sesión para finalizar la compra.",
 };
 
 export const esVacio = (valor) => !String(valor ?? "").trim();
@@ -117,11 +120,15 @@ export const validarFormularioProducto = ({
     descripcion: validarDescripcion(descripcion),
   });
 
-export const validarFormularioPedido = ({ nombre, total, cantidad }) =>
+export const validarUsuarioId = (usuarioId) =>
+  esVacio(usuarioId) ? mensajes.usuarioObligatorio : "";
+
+export const validarFormularioPedido = ({ nombre, total, cantidad, usuarioId }) =>
   limpiarErrores({
     nombre: validarNombre(nombre),
     total: validarTotal(total),
     cantidad: validarCantidad(cantidad),
+    usuarioId: validarUsuarioId(usuarioId),
   });
 
 export const validarNumeroTarjeta = (numero) => {

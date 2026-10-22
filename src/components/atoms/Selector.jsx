@@ -1,7 +1,8 @@
-function Selector({ id, value, onChange, options }) {
+function Selector({ id, name, value, onChange, options }) {
   return (
     <select
       id={id}
+      name={name}
       value={value}
       onChange={onChange}
       className="form-select p-2 border rounded"

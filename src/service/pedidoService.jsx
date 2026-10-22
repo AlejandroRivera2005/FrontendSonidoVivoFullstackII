@@ -2,7 +2,7 @@ import pedidosIniciales from '../data/pedidos.json'
 
 const clave2 = 'pedidos'
 const clave_version2 = 'pedidos_version'
-const version2 = 2
+const version2 = 3
 
 function reiniciar() {
   try {
