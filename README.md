@@ -11,6 +11,8 @@ Sonido Vivo
 Tienda de música ubicada en la región de Valparaíso
 
 ## Estructura del proyecto
+```text
+.
 ├── App.css
 ├── App.jsx
 ├── assets
@@ -93,6 +95,8 @@ Tienda de música ubicada en la región de Valparaíso
     ├── formatoPago.js
     ├── formatoPrecio.js
     └── validaciones.js
+
+```
 
 ## Tecnologías
 - React + Vite
