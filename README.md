@@ -105,10 +105,12 @@ Tienda de música ubicada en la región de Valparaíso
 - React router DOM
 
 ## Cómo ejecutar el proyecto
-npm create vite@latest sonido-vivo -- --template react
-cd sonido-vivo
-npm install react-router-dom bootstrap react-bootstrap react-toastify
-npm install -D vitest jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event
+Ejecuta estos comandos en el mismo orden:
+
+- npm create vite@latest sonido-vivo -- --template react
+- cd sonido-vivo
+- npm install react-router-dom bootstrap react-bootstrap react-toastify
+- npm install -D vitest jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event
 
 En el documento de cobertura de tests se encuentra el tutorial de cómo configurar los tests unitarios.
 
