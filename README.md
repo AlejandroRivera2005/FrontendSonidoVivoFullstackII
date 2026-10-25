@@ -29,4 +29,4 @@ npm run dev
 
 ## Material complementario
 Carpeta de Drive con documentos del semestre (ERS y otros):
-https://drive.google.com/drive/folders/XXXXXXXXXX
+https://drive.google.com/file/d/1OCjoL4JEdWKS48DAM2iN9XVNLDBjfxiU/view?usp=sharing
