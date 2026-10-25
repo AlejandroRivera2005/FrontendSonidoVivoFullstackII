@@ -22,11 +22,13 @@ import AdminSonidoVivo from "./pages/AdminSonidoVivo";
 import PedidosSonidoVivo from "./pages/PedidosSonidoVivo";
 import UsuariosSonidoVivo from "./pages/UsuariosSonidoVivo";
 import DetalleBlog from "./pages/DetalleBlog";
+import MisPedidosPage from "./pages/MisPedidosPage";
 
 
 const navigationConfig = [
   { label: "Inicio", path: "/", variant: "text" },
   { label: "Catálogo", path: "/catalogo", variant: "text" },
+  { label: "Mis Pedidos", path: "/mis-pedidos", variant: "text", soloUsuario: true },
   { label: "Iniciar sesión", path: "/login", variant: "text", soloInvitado: true },
   { label: "Registrarse", path: "/registro", variant: "text", soloInvitado: true },
   { label: "STAFF", path: "/staff-login", variant: "text" },
@@ -63,6 +65,7 @@ function App() {
               <Route path="/categoria/:nombre" element={<CatalogoPage />} />
               <Route path="/buscar/:texto" element={<CatalogoPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/mis-pedidos" element={<MisPedidosPage />} />
               <Route path="*" element={<Error404Page />} />
             </Route>
 

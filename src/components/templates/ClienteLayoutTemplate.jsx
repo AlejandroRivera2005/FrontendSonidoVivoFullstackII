@@ -14,16 +14,20 @@ function ClienteLayoutTemplate({ menuItems }) {
     navigate("/");
   };
 
+  const itemsVisibles = menuItems.filter((item) =>
+    usuario ? !item.soloInvitado : !item.soloUsuario
+  );
+
   const items = usuario
     ? [
-        ...menuItems.filter((item) => !item.soloInvitado),
+        ...itemsVisibles,
         {
           label: `Cerrar sesión (${usuario.nombre.split(" ")[0]})`,
           variant: "text",
           onClick: handleCerrarSesion,
         },
       ]
-    : menuItems;
+    : itemsVisibles;
 
   return (
     <>

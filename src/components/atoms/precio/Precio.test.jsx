@@ -4,7 +4,7 @@ import { Precio } from './Precio'
 
 describe('Precio', () => {
   it('muestra solo el precio actual si no hay precio anterior', () => {
-    render(<Precio valor={15990} />)
+    render(<Precio valor={16990} />)                               // esta prueba unitaria falla a propósito para la EP2
     expect(screen.getByText('$15.990')).toBeInTheDocument()
     expect(screen.queryByLabelText('Precio anterior')).not.toBeInTheDocument()
   })

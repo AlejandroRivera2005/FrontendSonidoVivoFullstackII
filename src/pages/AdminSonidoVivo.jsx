@@ -5,12 +5,13 @@ import FormField from "../components/molecules/FormField";
 import Boton from "../components/atoms/boton/Boton";
 import { useProductos } from "../context/ProductosContext";
 import { formatoPrecio } from "../utils/formatoPrecio";
-import { validarFormularioProducto } from "../utils/validaciones";
+import { esVacio, validarFormularioProducto } from "../utils/validaciones";
 import { useTituloPagina } from "../hooks/useTituloPagina";
 
 const form_inicial = {
   nombre: "",
   precio: "",
+  precioAnterior: "",
   categoria: "",
   stock: "",
   descripcion: "",
@@ -36,7 +37,7 @@ function AdminSonidoVivo() {
   };
 
   const limpiarFormulario = () => {
-    setForm(FORM_INICIAL);
+    setForm(form_inicial);
     setErrors({});
     setIdEditando(null);
   };
@@ -53,6 +54,7 @@ function AdminSonidoVivo() {
     const datos = {
       nombre: form.nombre.trim(),
       precio: Number(form.precio),
+      precioAnterior: esVacio(form.precioAnterior) ? null : Number(form.precioAnterior),
       categoria: form.categoria.trim(),
       stock: Number(form.stock),
       descripcion: form.descripcion.trim(),
@@ -73,6 +75,7 @@ function AdminSonidoVivo() {
     setForm({
       nombre: producto.nombre ?? "",
       precio: String(producto.precio ?? ""),
+      precioAnterior: String(producto.precioAnterior ?? ""),
       categoria: producto.categoria ?? "",
       stock: String(producto.stock ?? ""),
       descripcion: producto.descripcion ?? "",
@@ -115,7 +118,7 @@ function AdminSonidoVivo() {
               />
 
               <FormField
-                label="Precio"
+                label="Precio (de oferta si corresponde)"
                 type="number"
                 name="precio"
                 value={form.precio}
@@ -123,6 +126,17 @@ function AdminSonidoVivo() {
                 placeholder="0"
                 min="1"
                 error={errors.precio}
+              />
+
+              <FormField
+                label="Precio anterior (opcional)"
+                type="number"
+                name="precioAnterior"
+                value={form.precioAnterior}
+                onChange={handleChange}
+                placeholder="Déjalo vacío si no hay oferta"
+                min="1"
+                error={errors.precioAnterior}
               />
 
               <FormField
@@ -185,25 +199,44 @@ function AdminSonidoVivo() {
               <p className="text-muted mb-0">No hay productos registrados.</p>
             ) : (
               <ul className="list-group">
-                {productosCtx.productos.map((p) => (
+                {productosCtx.productos.map((p) => {
+                  const sinStock = p.stock === 0;
+                  const enOferta =
+                    typeof p.precioAnterior === "number" && p.precioAnterior > p.precio;
+
+                  return (
                   <li
                     key={p.id}
-                    className="list-group-item d-flex flex-wrap align-items-center gap-3"
+                    className={`list-group-item d-flex flex-wrap align-items-center gap-3${
+                      sinStock ? " list-group-item-danger" : ""
+                    }`}
                   >
                     <div className="flex-grow-1">
-                      <div className="fw-semibold text-break">{p.nombre}</div>
-                      <small className="text-muted">
+                      <div className={`fw-semibold text-break${sinStock ? " text-danger" : ""}`}>
+                        {p.nombre}
+                      </div>
+                      <small className={sinStock ? "text-danger fw-bold" : "text-muted"}>
                         {p.categoria}
-                        {typeof p.stock === "number" && ` · ${p.stock} en stock`}
+                        {sinStock
+                          ? " · Sin stock (0 unidades)"
+                          : typeof p.stock === "number" && ` · ${p.stock} en stock`}
                       </small>
                     </div>
-                    <span className="fw-bold">{formatoPrecio(p.precio)}</span>
+                    <span className="fw-bold">
+                      {formatoPrecio(p.precio)}
+                      {enOferta && (
+                        <small className="text-muted fw-normal ms-2">
+                          <s>{formatoPrecio(p.precioAnterior)}</s>
+                        </small>
+                      )}
+                    </span>
                     <div className="d-flex gap-2">
                       <Boton label="Editar" variant="outline-primary" onClick={() => editar(p)} />
                       <Boton label="Eliminar" variant="danger" onClick={() => eliminar(p)} />
                     </div>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             )}
           </div>

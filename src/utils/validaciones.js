@@ -34,6 +34,8 @@ export const mensajes = {
   usuarioObligatorio: "Debes seleccionar un usuario.",
   credencialesInvalidas: "Correo o contraseña incorrectos.",
   sesionRequerida: "Debes iniciar sesión para finalizar la compra.",
+  precioAnteriorInvalido: "El precio anterior debe ser un número mayor o igual a 1.",
+  precioAnteriorMenor: "El precio anterior debe ser mayor al precio de oferta.",
 };
 
 export const esVacio = (valor) => !String(valor ?? "").trim();
@@ -59,6 +61,15 @@ export const validarPrecio = (precio) => {
   if (esVacio(precio)) return mensajes.precioObligatorio;
   const numero = Number(precio);
   if (!Number.isFinite(numero) || numero < 1) return mensajes.precioInvalido;
+  return "";
+};
+
+export const validarPrecioAnterior = (precioAnterior, precio) => {
+  if (esVacio(precioAnterior)) return "";
+  const numero = Number(precioAnterior);
+  if (!Number.isFinite(numero) || numero < 1) return mensajes.precioAnteriorInvalido;
+  const actual = Number(precio);
+  if (Number.isFinite(actual) && numero <= actual) return mensajes.precioAnteriorMenor;
   return "";
 };
 
@@ -108,6 +119,7 @@ export const validarCantidad = (cantidad) => {
 export const validarFormularioProducto = ({
   nombre,
   precio,
+  precioAnterior,
   categoria,
   stock,
   descripcion,
@@ -115,6 +127,7 @@ export const validarFormularioProducto = ({
   limpiarErrores({
     nombre: validarNombre(nombre),
     precio: validarPrecio(precio),
+    precioAnterior: validarPrecioAnterior(precioAnterior, precio),
     categoria: validarCategoria(categoria),
     stock: validarStock(stock),
     descripcion: validarDescripcion(descripcion),
