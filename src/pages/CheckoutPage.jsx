@@ -13,6 +13,7 @@ import { formatoPrecio } from "../utils/formatoPrecio";
 import { formatoNumeroTarjeta, formatoVencimiento, formatoCvc } from "../utils/formatoPago";
 import { mensajes, validarCheckout, validarFormularioEnvio, validarFormularioPago } from "../utils/validaciones";
 import { useTituloPagina } from "../hooks/useTituloPagina";
+import { obtenerMensajeError } from "../service/api";
 import { useSesion } from "../context/SesionContext";
 
 const opciones_entrega = [
@@ -38,13 +39,14 @@ function CheckoutPage() {
   useTituloPagina("Checkout");
   const navigate = useNavigate();
   const carrito = useCart();
-  const { productos, actualizar: actualizarProducto } = useProductos();
+  const { productos, recargar: recargarProductos } = useProductos();
   const pedidosCtx = usePedidos();
   const sesionCtx = useSesion();
   const [tipoEntrega, setTipoEntrega] = useState("retiro");
   const [form, setForm] = useState(form_inicial);
   const [errors, setErrors] = useState({});
   const [confirmado, setConfirmado] = useState(false);
+  const [procesando, setProcesando] = useState(false);
 
   const temporizador = useRef(null);
   useEffect(() => () => clearTimeout(temporizador.current), []);
@@ -83,9 +85,9 @@ function CheckoutPage() {
     }
   };
 
-  const handleFinalizarCompra = (e) => {
+  const handleFinalizarCompra = async (e) => {
     e.preventDefault();
-    if (confirmado) return;
+    if (confirmado || procesando) return;
 
     if (!sesionCtx.usuario) {
       toast.error(mensajes.sesionRequerida);
@@ -122,26 +124,24 @@ function CheckoutPage() {
       return;
     }
 
-    pedidosCtx.crear({
-      nombre: itemsActuales
-        .map((item) => `${item.producto.nombre} x${item.cantidad}`)
-        .join(", "),
-      total: totalActual,
-      cantidad: carrito.totalItems,
-      usuarioId: sesionCtx.usuario.id,
-      entrega: tipoEntrega,
-      ...(esEnvio && {
-        direccion: `${form.direccion.trim()}, ${form.comuna.trim()}`,
-      }),
-    });
-
-    itemsActuales.forEach((item) => {
-      if (typeof item.producto.stock === "number") {
-        actualizarProducto(item.producto.id, {
-          stock: item.producto.stock - item.cantidad,
-        });
-      }
-    });
+    setProcesando(true);
+    try {
+      await pedidosCtx.crear({
+        usuarioId: sesionCtx.usuario.id,
+        entrega: tipoEntrega,
+        ...(esEnvio && { direccion: `${form.direccion.trim()}, ${form.comuna.trim()}` }),
+        items: itemsActuales.map((item) => ({
+          productoId: item.producto.id,
+          cantidad: item.cantidad,
+        })),
+      });
+      await recargarProductos();
+    } catch (error) {
+      toast.error(obtenerMensajeError(error));
+      setProcesando(false);
+      return;
+    }
+    setProcesando(false);
 
     const mensajeEntrega = esEnvio
       ? "Envío a domicilio seleccionado."
@@ -269,7 +269,7 @@ function CheckoutPage() {
                   label="Pagar"
                   variant="primary"
                   type="submit"
-                  disabled={confirmado}
+                  disabled={confirmado || procesando}
                 />
 
                 {carrito.items.length > 0 && (

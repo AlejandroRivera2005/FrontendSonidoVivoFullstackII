@@ -6,6 +6,7 @@ import Boton from "../components/atoms/boton/Boton";
 import { useProductos } from "../context/ProductosContext";
 import { formatoPrecio } from "../utils/formatoPrecio";
 import { esVacio, validarFormularioProducto } from "../utils/validaciones";
+import { obtenerMensajeError } from "../service/api";
 import { useTituloPagina } from "../hooks/useTituloPagina";
 
 const form_inicial = {
@@ -42,7 +43,7 @@ function AdminSonidoVivo() {
     setIdEditando(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const erroresValidacion = validarFormularioProducto(form);
     if (Object.keys(erroresValidacion).length > 0) {
@@ -60,14 +61,16 @@ function AdminSonidoVivo() {
       descripcion: form.descripcion.trim(),
     };
 
+    try {
     if (idEditando !== null) {
-      productosCtx.actualizar(idEditando, datos);
+      await productosCtx.actualizar(idEditando, datos);
       toast.success(`"${datos.nombre}" actualizado correctamente.`);
     } else {
-      productosCtx.crear(datos);
+      await productosCtx.crear({ ...datos, imagen: "/img/guitarra.jpg" });
       toast.success(`"${datos.nombre}" agregado correctamente.`);
     }
     limpiarFormulario();
+    } catch (error) { toast.error(obtenerMensajeError(error)); }
   };
 
   const editar = (producto) => {
@@ -83,10 +86,12 @@ function AdminSonidoVivo() {
     setErrors({});
   };
 
-  const eliminar = (producto) => {
-    productosCtx.eliminar(producto.id);
+  const eliminar = async (producto) => {
+    try {
+    await productosCtx.eliminar(producto.id);
     if (producto.id === idEditando) limpiarFormulario();
     toast.info(`"${producto.nombre}" eliminado.`);
+    } catch (error) { toast.error(obtenerMensajeError(error)); }
   };
 
   return (

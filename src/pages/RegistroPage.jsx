@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import FormPageTemplate from "../components/templates/FormPageTemplate";
 import RegistroForm from "../components/organisms/RegistroForm";
 import { useUsuarios } from "../context/UsuarioContext";
+import { obtenerMensajeError } from "../service/api";
 import { useTituloPagina } from "../hooks/useTituloPagina";
 
 function RegistroPage() {
@@ -10,14 +11,18 @@ function RegistroPage() {
   const navigate = useNavigate();
   const usuariosCtx = useUsuarios();
 
-  const handleRegistro = (datos) => {
-    usuariosCtx.crear({
+  const handleRegistro = async (datos) => {
+    try {
+    await usuariosCtx.crear({
       nombre: datos.nombre.trim(),
       email: datos.email.trim().toLowerCase(),
       password: datos.password,
     });
     toast.success(`Cuenta creada correctamente. ¡Bienvenido/a, ${datos.nombre.trim()}!`);
     navigate("/login");
+    } catch (error) {
+      toast.error(obtenerMensajeError(error));
+    }
   };
 
   return (

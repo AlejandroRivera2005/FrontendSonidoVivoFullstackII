@@ -2,24 +2,22 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import FormPageTemplate from "../components/templates/FormPageTemplate";
 import LoginForm from "../components/organisms/LoginForm";
+import { useSesion } from "../context/SesionContext";
+import { obtenerMensajeError } from "../service/api";
 import { useTituloPagina } from '../hooks/useTituloPagina';
-
-const staff_email = "admin@sonidovivo.cl";
-const staff_password = "staff123";
 
 function StaffLoginPage() {
   useTituloPagina('Acceso Staff');
   const navigate = useNavigate();
+  const { iniciarSesion } = useSesion();
 
-  const handleStaffLogin = (datos) => {
-    const emailCorrecto = datos.email.trim().toLowerCase() === staff_email;
-    const passwordCorrecta = datos.password === staff_password;
-
-    if (emailCorrecto && passwordCorrecta) {
-      toast.success(`Acceso de personal concedido para: ${datos.email}`);
-      navigate("/admin");
-    } else {
-      toast.error("Credenciales incorrectas.");
+  const handleStaffLogin = async (datos) => {
+    try {
+      await iniciarSesion(datos.email, datos.password);
+      toast.success('Sesión iniciada.');
+      navigate('/admin');
+    } catch (error) {
+      toast.error(obtenerMensajeError(error));
     }
   };
 

@@ -1,61 +1,25 @@
-import productosIniciales from '../data/productos.json'
+import { api } from './api'
 
-const clave = 'productos'
-const clave_version = 'productos_version'
-const version = 1
-
-function reiniciar() {
-  try {
-    localStorage.setItem(clave, JSON.stringify(productosIniciales))
-    localStorage.setItem(clave_version, String(version))
-  } catch {
-  }
-  return [...productosIniciales]
+export async function listarProductos(signal) {
+  const respuesta = await api.get('/productos', { signal })
+  return respuesta.data
 }
 
-function leer() {
-  try {
-    const guardado = localStorage.getItem(clave)
-    const versionGuardada = localStorage.getItem(clave_version)
-
-    if (guardado === null || versionGuardada !== String(version)) return reiniciar()
-
-    const lista = JSON.parse(guardado)
-    return Array.isArray(lista) ? lista : reiniciar()
-  } catch {
-    return reiniciar()
-  }
+export async function obtenerProducto(id) {
+  const respuesta = await api.get(`/productos/${id}`)
+  return respuesta.data
 }
 
-function guardar(lista) {
-  try {
-    localStorage.setItem(clave, JSON.stringify(lista))
-  } catch {
-  }
+export async function crearProducto(datos) {
+  const respuesta = await api.post('/productos', datos)
+  return respuesta.data
 }
 
-export function listarProductos() {
-  return leer()
+export async function actualizarProducto(id, cambios) {
+  const respuesta = await api.put(`/productos/${id}`, cambios)
+  return respuesta.data
 }
 
-export function obtenerProducto(id) {
-  return leer().find((p) => p.id === id) ?? null
-}
-
-export function crearProducto(datos) {
-  const lista = leer()
-  const nuevoId = Math.max(0, ...lista.map((p) => p.id)) + 1
-  const nuevo = { ...datos, id: nuevoId }
-  guardar([...lista, nuevo])
-  return nuevo
-}
-
-export function actualizarProducto(id, cambios) {
-  const lista = leer().map((p) => (p.id === id ? { ...p, ...cambios } : p))
-  guardar(lista)
-  return lista.find((p) => p.id === id) ?? null
-}
-
-export function eliminarProducto(id) {
-  guardar(leer().filter((p) => p.id !== id))
+export async function eliminarProducto(id) {
+  await api.delete(`/productos/${id}`)
 }

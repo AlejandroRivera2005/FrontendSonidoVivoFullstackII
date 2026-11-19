@@ -44,9 +44,9 @@ function App() {
   return (
     <BrowserRouter>
       <ProductosProvider>
+      <SesionProvider>
       <PedidosProvider>
       <UsuariosProvider>
-      <SesionProvider>
         <ProveedorCarrito>
           <Routes>
             <Route element={<ClienteLayoutTemplate menuItems={navigationConfig} />}>
@@ -77,9 +77,9 @@ function App() {
           </Routes>
           <ToastContainer />
         </ProveedorCarrito>
-      </SesionProvider>
       </UsuariosProvider>
       </PedidosProvider>
+      </SesionProvider>
       </ProductosProvider>
     </BrowserRouter>
   );

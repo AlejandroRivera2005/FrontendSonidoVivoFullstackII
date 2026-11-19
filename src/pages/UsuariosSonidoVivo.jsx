@@ -5,6 +5,7 @@ import FormField from "../components/molecules/FormField";
 import Boton from "../components/atoms/boton/Boton";
 import { useUsuarios } from "../context/UsuarioContext";
 import { validarFormularioUsuario } from "../utils/validaciones";
+import { obtenerMensajeError } from "../service/api";
 import { useTituloPagina } from "../hooks/useTituloPagina";
 
 const form_inicial = {
@@ -34,7 +35,8 @@ function UsuariosSonidoVivo() {
     setIdEditando(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    try {
     e.preventDefault();
     const erroresValidacion = validarFormularioUsuario(form, usuariosCtx.usuarios, idEditando);
     if (Object.keys(erroresValidacion).length > 0) {
@@ -50,13 +52,14 @@ function UsuariosSonidoVivo() {
     };
 
     if (idEditando !== null) {
-      usuariosCtx.actualizar(idEditando, datos);
+      await usuariosCtx.actualizar(idEditando, datos);
       toast.success(`Usuario "${datos.nombre}" actualizado correctamente.`);
     } else {
-      usuariosCtx.crear(datos);
+      await usuariosCtx.crear(datos);
       toast.success(`Usuario "${datos.nombre}" agregado correctamente.`);
     }
     limpiarFormulario();
+    } catch (error) { toast.error(obtenerMensajeError(error)); }
   };
 
   const editar = (usuario) => {
@@ -69,10 +72,12 @@ function UsuariosSonidoVivo() {
     setErrors({});
   };
 
-  const eliminar = (usuario) => {
-    usuariosCtx.eliminar(usuario.id);
+  const eliminar = async (usuario) => {
+    try {
+    await usuariosCtx.eliminar(usuario.id);
     if (usuario.id === idEditando) limpiarFormulario();
     toast.info(`Usuario "${usuario.nombre}" eliminado.`);
+    } catch (error) { toast.error(obtenerMensajeError(error)); }
   };
 
   return (
