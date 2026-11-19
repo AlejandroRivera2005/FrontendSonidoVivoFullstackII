@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import Boton from '../atoms/boton/Boton';
 
-function NavMenu({ menuItems }) {
+function NavMenu(props) {
   const navigate = useNavigate();
-  const items = menuItems || [];
+  const items = props.menuItems || [];
 
   return (
     <div className="d-flex justify-content-center justify-content-md-end align-items-center flex-wrap gap-2">

@@ -1,15 +1,11 @@
-function MensajeError({ mensaje, error, text, children }) {
-  const contenido = mensaje || error || text || children;
-
-  if (!contenido || typeof contenido !== 'string') {
-    return null;
-  }
+function Label(props) {
+  const className = props.className ?? "form-label fw-semibold";
 
   return (
-    <small className="text-danger d-block mt-1 fw-semibold">
-      {contenido}
-    </small>
+    <label htmlFor={props.htmlFor} className={className}>
+      {props.texto}
+    </label>
   );
 }
 
-export default MensajeError;
+export default Label;

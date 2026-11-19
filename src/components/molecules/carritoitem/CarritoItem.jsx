@@ -2,10 +2,10 @@ import Boton from "../../atoms/boton/Boton";
 import { formatoPrecio } from "../../../utils/formatoPrecio";
 
 
-function CarritoItem({ item, onIncrement, onRemove }) {
-  if (!item || !item.producto) return null;
+function CarritoItem(props) {
+  if (!props.item || !props.item.producto) return null;
 
-  const { producto, cantidad } = item;
+  const { producto, cantidad } = props.item;
   const subtotal = producto.precio * cantidad;
   const llegoAlLimite = typeof producto.stock === "number" && cantidad >= producto.stock;
 
@@ -21,12 +21,12 @@ function CarritoItem({ item, onIncrement, onRemove }) {
           label="+"
           variant="outline-secondary"
           disabled={llegoAlLimite}
-          onClick={() => onIncrement && onIncrement(producto.id)}
+          onClick={() => props.onIncrement && props.onIncrement(producto.id)}
         />
         <Boton
           label="Quitar"
           variant="danger"
-          onClick={() => onRemove && onRemove(producto.id)}
+          onClick={() => props.onRemove && props.onRemove(producto.id)}
         />
       </div>
     </li>

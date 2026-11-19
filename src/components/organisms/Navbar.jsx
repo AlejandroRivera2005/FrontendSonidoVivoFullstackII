@@ -2,8 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col } from 'react-bootstrap';
 import NavMenu from '../molecules/NavMenu';
 
-function Navbar({ brandName, menuItems, brandPath = '/' }) {
+function Navbar(props) {
   const navigate = useNavigate();
+  const brandPath = props.brandPath ?? '/';
 
   return (
     <header className="navbar-banner sticky-top">
@@ -15,11 +16,11 @@ function Navbar({ brandName, menuItems, brandPath = '/' }) {
               style={{ cursor: 'pointer', fontSize: '1.4rem', fontWeight: '700' }} 
               onClick={() => navigate(brandPath)}
             >
-              {brandName || "Sonido Vivo"}
+              {props.brandName || "Sonido Vivo"}
             </h2>
           </Col>
           <Col xs={12} md={8}>
-            <NavMenu menuItems={menuItems} />
+            <NavMenu menuItems={props.menuItems} />
           </Col>
 
         </Row>

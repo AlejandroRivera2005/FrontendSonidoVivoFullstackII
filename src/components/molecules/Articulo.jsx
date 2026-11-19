@@ -3,7 +3,8 @@ import Boton from "../atoms/boton/Boton";
 import { Precio } from "../atoms/precio/Precio";
 import imagenRespaldo from "../../assets/hero.png";
 
-function Articulo({ producto, onVer }) {
+function Articulo(props) {
+  const producto = props.producto;
   if (!producto) return null;
 
   const { precio, precioAnterior, categoria, imagen, stock } = producto;
@@ -51,7 +52,7 @@ function Articulo({ producto, onVer }) {
           <Boton
             label="Ver producto"
             variant="primary"
-            onClick={() => onVer && onVer(producto)}
+            onClick={() => props.onVer && props.onVer(producto)}
           />
         </div>
       </Card.Body>

@@ -10,7 +10,8 @@ const form_inicial = {
   confirmarPassword: "",
 };
 
-function RegistroForm({ onSubmit, usuarios = [] }) {
+function RegistroForm(props) {
+  const usuarios = props.usuarios ?? [];
   const [form, setForm] = useState(form_inicial);
   const [errors, setErrors] = useState({});
 
@@ -35,7 +36,7 @@ function RegistroForm({ onSubmit, usuarios = [] }) {
     }
 
     setErrors({});
-    if (onSubmit) onSubmit(form);
+    if (props.onSubmit) props.onSubmit(form);
   };
 
   return (

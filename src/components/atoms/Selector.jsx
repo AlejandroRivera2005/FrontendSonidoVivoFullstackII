@@ -1,13 +1,13 @@
-function Selector({ id, name, value, onChange, options }) {
+function Selector(props) {
   return (
     <select
-      id={id}
-      name={name}
-      value={value}
-      onChange={onChange}
+      id={props.id}
+      name={props.name}
+      value={props.value}
+      onChange={props.onChange}
       className="form-select p-2 border rounded"
     >
-      {options && options.map((option, index) => (
+      {props.options && props.options.map((option, index) => (
         <option key={index} value={option.value}>
           {option.label}
         </option>

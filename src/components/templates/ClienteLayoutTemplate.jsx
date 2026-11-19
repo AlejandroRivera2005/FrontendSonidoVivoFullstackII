@@ -4,7 +4,7 @@ import Navbar from "../organisms/Navbar";
 import Footer from "../organisms/Footer";
 import { useSesion } from "../../context/SesionContext";
 
-function ClienteLayoutTemplate({ menuItems }) {
+function ClienteLayoutTemplate(props) {
   const navigate = useNavigate();
   const { usuario, cerrarSesion } = useSesion();
 
@@ -14,7 +14,7 @@ function ClienteLayoutTemplate({ menuItems }) {
     navigate("/");
   };
 
-  const itemsVisibles = menuItems.filter((item) =>
+  const itemsVisibles = props.menuItems.filter((item) =>
     usuario ? !item.soloInvitado : !item.soloUsuario
   );
 

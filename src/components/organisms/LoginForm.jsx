@@ -3,7 +3,7 @@ import FormField from "../molecules/FormField";
 import Boton from "../atoms/boton/Boton";
 import { validarFormularioLogin } from "../../utils/validaciones";
 
-function LoginForm({ onSubmit }) {
+function LoginForm(props) {
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
 
@@ -28,7 +28,7 @@ function LoginForm({ onSubmit }) {
     }
 
     setErrors({});
-    if (onSubmit) onSubmit(form);
+    if (props.onSubmit) props.onSubmit(form);
   };
 
   return (

@@ -3,7 +3,8 @@ import Boton from "../atoms/boton/Boton";
 import { formatoFecha } from "../../utils/formatoFecha";
 import imagenRespaldo from "../../assets/hero.png";
 
-function EntradaBlog({ entrada, onVer }) {
+function EntradaBlog(props) {
+  const entrada = props.entrada;
   if (!entrada) return null;
 
   const { titulo, fecha, categoria, resumen, imagen } = entrada;
@@ -39,7 +40,7 @@ function EntradaBlog({ entrada, onVer }) {
           <Boton
             label="Saber más"
             variant="primary"
-            onClick={() => onVer && onVer(entrada)}
+            onClick={() => props.onVer && props.onVer(entrada)}
           />
         </div>
       </Card.Body>

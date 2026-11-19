@@ -1,25 +1,13 @@
-function Input({
-  id,
-  name,
-  type = "text",
-  value,
-  onChange,
-  placeholder,
-  className = "",
-  required,
-  rows = 4,
-  ...rest
-}) {
+function Input(props) {
+  const type = props.type ?? "text";
+  const rows = props.rows ?? 4;
+
   const propsComunes = {
-    id,
-    name,
-    value,
-    onChange,
-    placeholder,
-    required,
-    className: `form-control ${className}`.trim(),
-    ...rest,
+    ...props,
+    className: `form-control ${props.className ?? ""}`.trim(),
   };
+  delete propsComunes.type;
+  delete propsComunes.rows;
 
   if (type === "textarea") {
     return <textarea rows={rows} {...propsComunes} />;

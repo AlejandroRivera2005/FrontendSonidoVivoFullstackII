@@ -2,21 +2,28 @@ import Label from '../atoms/Label';
 import Input from '../atoms/Input';
 import MensajeError from '../atoms/MensajeError';
 
-function FormField({ label, type = "text", name, value, onChange, placeholder, error, ...rest }) {
+function FormField(props) {
+  const type = props.type ?? "text";
+
+  const extras = { ...props };
+  ["label", "type", "name", "value", "onChange", "placeholder", "error"].forEach(
+    (clave) => delete extras[clave]
+  );
+
   return (
     <div className="mb-3">
-      {label && <Label texto={label} htmlFor={name} />}
+      {props.label && <Label texto={props.label} htmlFor={props.name} />}
       <Input
-        id={name}
+        id={props.name}
         type={type}
-        name={name}
-        value={value ?? ""}
-        onChange={onChange}
-        placeholder={placeholder}
-        className={error ? "is-invalid" : ""}
-        {...rest}
+        name={props.name}
+        value={props.value ?? ""}
+        onChange={props.onChange}
+        placeholder={props.placeholder}
+        className={props.error ? "is-invalid" : ""}
+        {...extras}
       />
-      <MensajeError mensaje={error} />
+      <MensajeError mensaje={props.error} />
     </div>
   );
 }
