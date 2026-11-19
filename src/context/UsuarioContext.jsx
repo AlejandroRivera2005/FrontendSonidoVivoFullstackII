@@ -1,21 +1,20 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import * as usuarioService from '../service/usuarioService'
-import { useSesion } from './SesionContext'
 
 const UsuariosContext = createContext(null)
 
 export function UsuariosProvider({ children }) {
-  const { usuario } = useSesion()
   const [usuarios, setUsuarios] = useState([])
 
   useEffect(() => {
-    if (!usuario) return
     const controller = new AbortController()
     usuarioService.listarUsuarios(controller.signal)
-      .then(setUsuarios)
-      .catch(() => {})
+      .then((lista) => { if (!controller.signal.aborted) setUsuarios(lista) })
+      .catch((error) => {
+        if (error.code !== 'ERR_CANCELED') console.error('No se pudieron cargar usuarios:', error)
+      })
     return () => controller.abort()
-  }, [usuario?.id])
+  }, [])
 
   async function crear(datos) {
     const nuevo = await usuarioService.crearUsuario(datos)

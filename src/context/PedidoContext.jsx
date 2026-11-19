@@ -5,27 +5,39 @@ import { useSesion } from './SesionContext'
 const PedidosContext = createContext(null)
 
 export function PedidosProvider({ children }) {
-  const { usuario } = useSesion()
+  const { usuario, verificando } = useSesion()
   const [pedidos, setPedidos] = useState([])
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState(null)
 
   async function recargar() {
-    const lista = await pedidoService.listarPedidos()
-    setPedidos(lista)
-    setError(null)
-    return lista
+    setCargando(true)
+    try {
+      const lista = await pedidoService.listarPedidos()
+      setPedidos(lista)
+      setError(null)
+      return lista
+    } catch (err) {
+      setError(err)
+      throw err
+    } finally {
+      setCargando(false)
+    }
   }
 
   useEffect(() => {
-    if (!usuario) return
+    if (verificando) return
     const controller = new AbortController()
+    setCargando(true)
+    setError(null)
     pedidoService.listarPedidos(controller.signal)
-      .then(setPedidos)
-      .catch((err) => { if (err.code !== 'ERR_CANCELED') setError(err) })
+      .then((lista) => { if (!controller.signal.aborted) setPedidos(lista) })
+      .catch((err) => {
+        if (!controller.signal.aborted && err.code !== 'ERR_CANCELED') setError(err)
+      })
       .finally(() => { if (!controller.signal.aborted) setCargando(false) })
     return () => controller.abort()
-  }, [usuario?.id])
+  }, [usuario?.id, verificando])
 
   async function crear(datos) {
     const pedido = await pedidoService.crearPedido(datos)

@@ -135,25 +135,27 @@ function CheckoutPage() {
           cantidad: item.cantidad,
         })),
       });
-      await recargarProductos();
     } catch (error) {
       toast.error(obtenerMensajeError(error));
       setProcesando(false);
       return;
     }
+    setConfirmado(true);
+    carrito.vaciar();
     setProcesando(false);
+    recargarProductos().catch((error) => {
+      console.error('Pedido creado; no se pudo actualizar el catálogo:', error);
+    });
 
     const mensajeEntrega = esEnvio
       ? "Envío a domicilio seleccionado."
       : "Retiro presencial en tienda seleccionado.";
-    toast.success(`¡Pago realizado y pedido confirmado! ${mensajeEntrega}`, {
+    toast.success(`¡Pedido registrado correctamente! ${mensajeEntrega}`, {
       autoClose: 3500,
     });
 
-    setConfirmado(true);
     setForm(form_inicial);
     setErrors({});
-    carrito.vaciar();
     temporizador.current = setTimeout(() => navigate("/catalogo"), 3000);
   };
 

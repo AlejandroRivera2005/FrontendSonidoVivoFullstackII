@@ -1,24 +1,32 @@
+
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import FormPageTemplate from "../components/templates/FormPageTemplate";
 import LoginForm from "../components/organisms/LoginForm";
-import { useSesion } from "../context/SesionContext";
-import { obtenerMensajeError } from "../service/api";
-import { useTituloPagina } from '../hooks/useTituloPagina';
+import { useTituloPagina } from "../hooks/useTituloPagina";
+
+const admin_email = "admin@sonidovivo.cl";
+const admin_contrasena = "staff123";
 
 function StaffLoginPage() {
-  useTituloPagina('Acceso Staff');
-  const navigate = useNavigate();
-  const { iniciarSesion } = useSesion();
+  useTituloPagina("Acceso Staff");
 
-  const handleStaffLogin = async (datos) => {
-    try {
-      await iniciarSesion(datos.email, datos.password);
-      toast.success('Sesión iniciada.');
-      navigate('/admin');
-    } catch (error) {
-      toast.error(obtenerMensajeError(error));
+  const navigate = useNavigate();
+
+  const handleStaffLogin = (datos) => {
+    const email = datos.email.trim().toLowerCase();
+    const password = datos.password;
+
+    if (
+      email === admin_email &&
+      password === admin_contrasena
+    ) {
+      toast.success("Bienvenido al panel de administración.");
+      navigate("/admin");
+      return;
     }
+
+    toast.error("Correo electrónico o contraseña incorrectos.");
   };
 
   return (
