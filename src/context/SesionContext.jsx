@@ -4,53 +4,37 @@ import * as sesionService from '../service/sesionService'
 const SesionContext = createContext(null)
 
 export function SesionProvider({ children }) {
-  const [usuario, setUsuario] = useState(() => sesionService.leerSesion()?.usuario ?? null)
-  const [verificando, setVerificando] = useState(Boolean(sesionService.leerToken()))
+  const [usuario, setUsuario] = useState(null)
+  const [verificando, setVerificando] = useState(true)
 
   useEffect(() => {
     let activo = true
-    function sesionExpirada() {
-      setUsuario(null)
+    if (!sesionService.leerToken()) {
       setVerificando(false)
+      return
     }
-    window.addEventListener('sonidovivo:sesion-expirada', sesionExpirada)
-    if (sesionService.leerToken()) {
-      sesionService.obtenerPerfil()
-        .then((perfil) => {
-          if (activo) setUsuario(perfil)
-        })
-        .catch((error) => {
-          if (activo && error.response?.status === 401) {
-            sesionService.borrarSesion()
-            setUsuario(null)
-          }
-        })
-        .finally(() => { if (activo) setVerificando(false) })
-    }
-    return () => {
-      activo = false
-      window.removeEventListener('sonidovivo:sesion-expirada', sesionExpirada)
-    }
+    sesionService.obtenerPerfil()
+      .then((perfil) => { if (activo) setUsuario(perfil) })
+      .catch(() => {
+        sesionService.borrarSesion()
+        if (activo) setUsuario(null)
+      })
+      .finally(() => { if (activo) setVerificando(false) })
+    return () => { activo = false }
   }, [])
 
   async function iniciarSesion(email, password) {
     const usuarioAutenticado = await sesionService.iniciarSesion(email, password)
     setUsuario(usuarioAutenticado)
-    setVerificando(false)
     return usuarioAutenticado
   }
 
   function cerrarSesion() {
     sesionService.borrarSesion()
     setUsuario(null)
-    setVerificando(false)
   }
 
-  return (
-    <SesionContext.Provider value={{ usuario, verificando, iniciarSesion, cerrarSesion }}>
-      {children}
-    </SesionContext.Provider>
-  )
+  return <SesionContext.Provider value={{ usuario, verificando, iniciarSesion, cerrarSesion }}>{children}</SesionContext.Provider>
 }
 
 export function useSesion() {

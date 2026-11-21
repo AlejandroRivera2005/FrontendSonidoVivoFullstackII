@@ -1,6 +1,11 @@
 import { api } from './api'
 
 export async function listarPedidos(signal) {
+  const respuesta = await api.get('/pedidos/mios', { signal })
+  return respuesta.data
+}
+
+export async function listarTodosPedidos(signal) {
   const respuesta = await api.get('/pedidos', { signal })
   return respuesta.data
 }

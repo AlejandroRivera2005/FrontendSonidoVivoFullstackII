@@ -1,12 +1,17 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+
+import AutorizacionRuta from "./utils/AutorizacionRuta";
+
 import { ProductosProvider } from "./context/ProductosContext";
 import { ProveedorCarrito } from "./context/CarritoContext";
 import { PedidosProvider } from "./context/PedidoContext";
 import { UsuariosProvider } from "./context/UsuarioContext";
 import { SesionProvider } from "./context/SesionContext";
+
 import ClienteLayoutTemplate from "./components/templates/ClienteLayoutTemplate";
 import AdminLayoutTemplate from "./components/templates/AdminLayoutTemplate";
+
 import InicioPage from "./pages/InicioPage";
 import QuienesSomosPage from "./pages/QuienesSomosPage";
 import BlogsPage from "./pages/BlogsPage";
@@ -24,13 +29,27 @@ import UsuariosSonidoVivo from "./pages/UsuariosSonidoVivo";
 import DetalleBlog from "./pages/DetalleBlog";
 import MisPedidosPage from "./pages/MisPedidosPage";
 
-
 const navigationConfig = [
   { label: "Inicio", path: "/", variant: "text" },
   { label: "Catálogo", path: "/catalogo", variant: "text" },
-  { label: "Mis Pedidos", path: "/mis-pedidos", variant: "text", soloUsuario: true },
-  { label: "Iniciar sesión", path: "/login", variant: "text", soloInvitado: true },
-  { label: "Registrarse", path: "/registro", variant: "text", soloInvitado: true },
+  {
+    label: "Mis Pedidos",
+    path: "/mis-pedidos",
+    variant: "text",
+    soloUsuario: true,
+  },
+  {
+    label: "Iniciar sesión",
+    path: "/login",
+    variant: "text",
+    soloInvitado: true,
+  },
+  {
+    label: "Registrarse",
+    path: "/registro",
+    variant: "text",
+    soloInvitado: true,
+  },
   { label: "STAFF", path: "/staff-login", variant: "text" },
 ];
 
@@ -44,42 +63,109 @@ function App() {
   return (
     <BrowserRouter>
       <ProductosProvider>
-      <SesionProvider>
-      <PedidosProvider>
-      <UsuariosProvider>
-        <ProveedorCarrito>
-          <Routes>
-            <Route element={<ClienteLayoutTemplate menuItems={navigationConfig} />}>
-              <Route path="/" element={<InicioPage />} />
-              <Route path="/quienessomos" element={<QuienesSomosPage />} />
-              <Route path="/blogs" element={<BlogsPage />} />
-              <Route path="/blogs/categoria/:nombre" element={<BlogsPage />} />
-              <Route path="/blogs/buscar/:texto" element={<BlogsPage />} />
-              <Route path="/blog/:id" element={<DetalleBlog />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/registro" element={<RegistroPage />} />
-              <Route path="/staff-login" element={<StaffLoginPage />} />
-              <Route path="/contacto" element={<ContactoPage />} />
-              <Route path="/producto/:id" element={<DetalleProductoPage />} />
-              <Route path="/catalogo" element={<CatalogoPage />} />
-              <Route path="/categoria/:nombre" element={<CatalogoPage />} />
-              <Route path="/buscar/:texto" element={<CatalogoPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/mis-pedidos" element={<MisPedidosPage />} />
-              <Route path="*" element={<Error404Page />} />
-            </Route>
+        <SesionProvider>
+          <PedidosProvider>
+            <UsuariosProvider>
+              <ProveedorCarrito>
+                <Routes>
+                  <Route
+                    element={
+                      <ClienteLayoutTemplate
+                        menuItems={navigationConfig}
+                      />
+                    }
+                  >
+                    <Route path="/" element={<InicioPage />} />
+                    <Route
+                      path="/quienessomos"
+                      element={<QuienesSomosPage />}
+                    />
+                    <Route path="/blogs" element={<BlogsPage />} />
+                    <Route
+                      path="/blogs/categoria/:nombre"
+                      element={<BlogsPage />}
+                    />
+                    <Route
+                      path="/blogs/buscar/:texto"
+                      element={<BlogsPage />}
+                    />
+                    <Route
+                      path="/blog/:id"
+                      element={<DetalleBlog />}
+                    />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route
+                      path="/registro"
+                      element={<RegistroPage />}
+                    />
+                    <Route
+                      path="/staff-login"
+                      element={<StaffLoginPage />}
+                    />
+                    <Route
+                      path="/contacto"
+                      element={<ContactoPage />}
+                    />
+                    <Route
+                      path="/producto/:id"
+                      element={<DetalleProductoPage />}
+                    />
+                    <Route
+                      path="/catalogo"
+                      element={<CatalogoPage />}
+                    />
+                    <Route
+                      path="/categoria/:nombre"
+                      element={<CatalogoPage />}
+                    />
+                    <Route
+                      path="/buscar/:texto"
+                      element={<CatalogoPage />}
+                    />
+                    <Route element={<AutorizacionRuta />}>
+                      <Route
+                        path="/checkout"
+                        element={<CheckoutPage />}
+                      />
+                      <Route
+                        path="/mis-pedidos"
+                        element={<MisPedidosPage />}
+                      />
+                    </Route>
+                    <Route
+                      path="*"
+                      element={<Error404Page />}
+                    />
+                  </Route>
+                  <Route element={<AutorizacionRuta admin />}>
+                    <Route
+                      element={
+                        <AdminLayoutTemplate
+                          menuItems={navigationAdminConfig}
+                        />
+                      }
+                    >
+                      <Route
+                        path="/admin"
+                        element={<AdminSonidoVivo />}
+                      />
+                      <Route
+                        path="/pedidos"
+                        element={<PedidosSonidoVivo />}
+                      />
+                      <Route
+                        path="/usuarios"
+                        element={<UsuariosSonidoVivo />}
+                      />
+                    </Route>
+                  </Route>
+                </Routes>
 
-            <Route element={<AdminLayoutTemplate menuItems={navigationAdminConfig} />}>
-              <Route path="/admin" element={<AdminSonidoVivo />} />
-              <Route path="/pedidos" element={<PedidosSonidoVivo />} />
-              <Route path="/usuarios" element={<UsuariosSonidoVivo />} />
-            </Route>
-          </Routes>
-          <ToastContainer />
-        </ProveedorCarrito>
-      </UsuariosProvider>
-      </PedidosProvider>
-      </SesionProvider>
+                <ToastContainer />
+              </ProveedorCarrito>
+            </UsuariosProvider>
+          </PedidosProvider>
+        </SesionProvider>
       </ProductosProvider>
     </BrowserRouter>
   );

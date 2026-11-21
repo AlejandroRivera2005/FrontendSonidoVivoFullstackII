@@ -5,39 +5,39 @@ import { useSesion } from './SesionContext'
 const PedidosContext = createContext(null)
 
 export function PedidosProvider({ children }) {
-  const { usuario, verificando } = useSesion()
+  const { usuario } = useSesion()
   const [pedidos, setPedidos] = useState([])
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState(null)
 
   async function recargar() {
-    setCargando(true)
-    try {
-      const lista = await pedidoService.listarPedidos()
-      setPedidos(lista)
-      setError(null)
-      return lista
-    } catch (err) {
-      setError(err)
-      throw err
-    } finally {
-      setCargando(false)
-    }
+    if (!usuario) { setPedidos([]); return [] }
+    const lista = usuario.rol === 'admin'
+      ? await pedidoService.listarTodosPedidos()
+      : await pedidoService.listarPedidos()
+    setPedidos(lista)
+    setError(null)
+    return lista
   }
 
   useEffect(() => {
-    if (verificando) return
+    if (!usuario) {
+      setPedidos([])
+      setError(null)
+      setCargando(false)
+      return
+    }
     const controller = new AbortController()
     setCargando(true)
-    setError(null)
-    pedidoService.listarPedidos(controller.signal)
-      .then((lista) => { if (!controller.signal.aborted) setPedidos(lista) })
-      .catch((err) => {
-        if (!controller.signal.aborted && err.code !== 'ERR_CANCELED') setError(err)
-      })
+    const cargar = usuario.rol === 'admin'
+      ? pedidoService.listarTodosPedidos
+      : pedidoService.listarPedidos
+    cargar(controller.signal)
+      .then((lista) => { if (!controller.signal.aborted) { setPedidos(lista); setError(null) } })
+      .catch((err) => { if (!controller.signal.aborted && err.code !== 'ERR_CANCELED') setError(err) })
       .finally(() => { if (!controller.signal.aborted) setCargando(false) })
     return () => controller.abort()
-  }, [usuario?.id, verificando])
+  }, [usuario?.id, usuario?.rol])
 
   async function crear(datos) {
     const pedido = await pedidoService.crearPedido(datos)

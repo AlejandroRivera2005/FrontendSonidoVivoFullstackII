@@ -141,21 +141,19 @@ function CheckoutPage() {
       return;
     }
     setConfirmado(true);
-    carrito.vaciar();
     setProcesando(false);
-    recargarProductos().catch((error) => {
-      console.error('Pedido creado; no se pudo actualizar el catálogo:', error);
-    });
+    recargarProductos().catch(() => toast.warning('Compra registrada; no se pudo actualizar el catálogo.'));
 
     const mensajeEntrega = esEnvio
       ? "Envío a domicilio seleccionado."
       : "Retiro presencial en tienda seleccionado.";
-    toast.success(`¡Pedido registrado correctamente! ${mensajeEntrega}`, {
+    toast.success(`¡Pago realizado y pedido confirmado! ${mensajeEntrega}`, {
       autoClose: 3500,
     });
 
     setForm(form_inicial);
     setErrors({});
+    carrito.vaciar();
     temporizador.current = setTimeout(() => navigate("/catalogo"), 3000);
   };
 
