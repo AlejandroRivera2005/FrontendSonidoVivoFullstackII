@@ -11,8 +11,8 @@ export async function obtenerUsuario(id) {
 }
 
 export async function crearUsuario(datos) {
-  const respuesta = await api.post('/auth/registro', datos)
-  return respuesta.data.usuario
+  const respuesta = await api.post('/usuarios', datos)
+  return respuesta.data
 }
 
 export async function actualizarUsuario(id, cambios) {

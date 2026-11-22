@@ -217,16 +217,15 @@ export const validarEmailUnico = (email, usuarios = [], idActual = null) => {
 };
 
 export const validarFormularioUsuario = (
-  { nombre, email, password },
+  { nombre, email, password, rol = "cliente" },
   usuarios = [],
   idActual = null
 ) =>
   limpiarErrores({
     nombre: validarNombre(nombre),
-    email:
-      validarEmail(String(email ?? "").trim()) ||
-      validarEmailUnico(email, usuarios, idActual),
-    password: validarPasswordNueva(password),
+    email: validarEmail(String(email ?? "").trim()) || validarEmailUnico(email, usuarios, idActual),
+    password: idActual !== null && !password ? "" : validarPasswordNueva(password),
+    rol: ["cliente", "admin"].includes(rol) ? "" : "Selecciona un rol válido.",
   });
 
 export const validarFormularioRegistro = (

@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import FormField from "../components/molecules/FormField";
 import Boton from "../components/atoms/boton/Boton";
 import { useUsuarios } from "../context/UsuarioContext";
+import { useSesion } from "../context/SesionContext";
 import { validarFormularioUsuario } from "../utils/validaciones";
 import { obtenerMensajeError } from "../service/api";
 import { useTituloPagina } from "../hooks/useTituloPagina";
@@ -12,11 +13,13 @@ const form_inicial = {
   nombre: "",
   email: "",
   password: "",
+  rol: "cliente",
 };
 
 function UsuariosSonidoVivo() {
   useTituloPagina("Administrar usuarios");
   const usuariosCtx = useUsuarios();
+  const { usuario: sesionActual } = useSesion();
 
   const [form, setForm] = useState(form_inicial);
   const [errors, setErrors] = useState({});
@@ -48,7 +51,8 @@ function UsuariosSonidoVivo() {
     const datos = {
       nombre: form.nombre.trim(),
       email: form.email.trim().toLowerCase(),
-      password: form.password,
+      rol: form.rol,
+      ...(idEditando === null || form.password ? { password: form.password } : {}),
     };
 
     if (idEditando !== null) {
@@ -67,12 +71,14 @@ function UsuariosSonidoVivo() {
     setForm({
       nombre: usuario.nombre ?? "",
       email: usuario.email ?? "",
-      password: usuario.password ?? "",
+      password: "",
+      rol: usuario.rol ?? "cliente",
     });
     setErrors({});
   };
 
   const eliminar = async (usuario) => {
+    if (!window.confirm(`¿Eliminar a ${usuario.nombre}?`)) return;
     try {
     await usuariosCtx.eliminar(usuario.id);
     if (usuario.id === idEditando) limpiarFormulario();
@@ -124,10 +130,22 @@ function UsuariosSonidoVivo() {
                 name="password"
                 value={form.password}
                 onChange={handleChange}
-                placeholder="••••••••"
+                placeholder={idEditando !== null ? "Dejar vacío para conservar" : "Mínimo 6 caracteres"}
                 autoComplete="new-password"
                 error={errors.password}
               />
+
+              <div className="mb-3">
+                <label className="form-label" htmlFor="rol">Rol del usuario</label>
+                <select id="rol" name="rol" className={`form-select ${errors.rol ? "is-invalid" : ""}`}
+                  value={form.rol} onChange={handleChange}
+                  disabled={idEditando !== null && Number(idEditando) === Number(sesionActual?.id)}>
+                  <option value="cliente">Cliente</option>
+                  <option value="admin">Administrador</option>
+                </select>
+                {errors.rol && <div className="invalid-feedback">{errors.rol}</div>}
+              </div>
+              {idEditando !== null && <p className="text-muted small">Deja la contraseña vacía para conservar la actual.</p>}
 
               <div className="d-flex flex-wrap gap-2 mt-4">
                 <Boton
@@ -159,10 +177,13 @@ function UsuariosSonidoVivo() {
                     <div className="flex-grow-1">
                       <div className="fw-semibold text-break">{u.nombre}</div>
                       <small className="text-muted text-break">{u.email}</small>
+                      <div><span className={`badge ${u.rol === "admin" ? "bg-primary" : "bg-secondary"}`}>
+                        {u.rol === "admin" ? "Administrador" : "Cliente"}
+                      </span></div>
                     </div>
                     <div className="d-flex gap-2">
                       <Boton label="Editar" variant="outline-primary" onClick={() => editar(u)} />
-                      <Boton label="Eliminar" variant="danger" onClick={() => eliminar(u)} />
+                      {Number(u.id) !== Number(sesionActual?.id) && <Boton label="Eliminar" variant="danger" onClick={() => eliminar(u)} />}
                     </div>
                   </li>
                 ))}
