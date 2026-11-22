@@ -11,13 +11,21 @@ export function PedidosProvider(props) {
   const [error, setError] = useState(null)
 
   async function recargar() {
-    if (!usuario) { setPedidos([]); return [] }
-    const lista = usuario.rol === 'admin'
-      ? await pedidoService.listarTodosPedidos()
-      : await pedidoService.listarPedidos()
-    setPedidos(lista)
+    if (!usuario) { setPedidos([]); setError(null); setCargando(false); return [] }
+    setCargando(true)
     setError(null)
-    return lista
+    try {
+      const lista = usuario.rol === 'admin'
+        ? await pedidoService.listarTodosPedidos()
+        : await pedidoService.listarPedidos()
+      setPedidos(lista)
+      return lista
+    } catch (err) {
+      setError(err)
+      throw err
+    } finally {
+      setCargando(false)
+    }
   }
 
   useEffect(() => {

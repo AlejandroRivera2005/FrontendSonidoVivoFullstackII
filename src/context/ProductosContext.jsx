@@ -9,16 +9,24 @@ export function ProductosProvider(props) {
   const [error, setError] = useState(null)
 
   async function recargar() {
-    const lista = await productoService.listarProductos()
-    setProductos(lista)
+    setCargando(true)
     setError(null)
-    return lista
+    try {
+      const lista = await productoService.listarProductos()
+      setProductos(lista)
+      return lista
+    } catch (err) {
+      setError(err)
+      throw err
+    } finally {
+      setCargando(false)
+    }
   }
 
   useEffect(() => {
     const controller = new AbortController()
     productoService.listarProductos(controller.signal)
-      .then(setProductos)
+      .then((lista) => { if (!controller.signal.aborted) { setProductos(lista); setError(null) } })
       .catch((err) => { if (err.code !== 'ERR_CANCELED') setError(err) })
       .finally(() => { if (!controller.signal.aborted) setCargando(false) })
     return () => controller.abort()

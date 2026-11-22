@@ -7,12 +7,12 @@ function InicioPage() {
   useTituloPagina('Inicio')
 
   return (
-    <div className="home-container" style={{ textAlign: 'center', padding: '40px' }}>
+    <div className="home-container home-container--centrado">
       <h1>¡Bienvenid@ a Sonido Vivo!</h1>
       <p>La mejor tienda de música dentro de la quinta región.</p>
 
 
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '30px' }}>
+      <div className="home-container__acciones">
         <Boton 
           label="¿Quienes somos?" 
           variant="primary" 

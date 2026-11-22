@@ -63,8 +63,7 @@ function DetalleBlog() {
               <img
                 src={imagen || imagenRespaldo}
                 alt={titulo}
-                className="img-fluid"
-                style={{ maxHeight: "400px", objectFit: "contain" }}
+                className="img-fluid detalle-imagen"
                 onError={(e) => {
                   e.currentTarget.onerror = null;
                   e.currentTarget.src = imagenRespaldo;

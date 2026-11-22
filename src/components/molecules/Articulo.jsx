@@ -19,8 +19,7 @@ function Articulo(props) {
         variant="top"
         src={imagen || imagenRespaldo}
         alt=""
-        className="card-producto__imagen p-3"
-        style={{ height: "180px", objectFit: "contain" }}
+        className="card-producto__imagen p-3 imagen-tarjeta"
       />
 
       <Card.Body className="d-flex flex-column">

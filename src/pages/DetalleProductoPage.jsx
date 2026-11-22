@@ -73,8 +73,7 @@ function DetalleProductoPage() {
             <img
               src={imagen || imagenRespaldo}
               alt={nombre}
-              className="img-fluid"
-              style={{ maxHeight: "400px", objectFit: "contain" }}
+              className="img-fluid detalle-imagen"
             />
           </div>
         </Col>

@@ -15,8 +15,7 @@ function EntradaBlog(props) {
         variant="top"
         src={imagen || imagenRespaldo}
         alt=""
-        className="p-3"
-        style={{ height: "180px", objectFit: "contain" }}
+        className="p-3 imagen-tarjeta"
         onError={(e) => {
           e.currentTarget.onerror = null;
           e.currentTarget.src = imagenRespaldo;

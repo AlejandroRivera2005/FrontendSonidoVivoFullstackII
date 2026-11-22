@@ -20,7 +20,9 @@ api.interceptors.response.use(
   (error) => {
     const ruta = String(error.config?.url || '')
     const esAutenticacion = /^\/auth\/(?:login|registro)(?:\?|$)/.test(ruta)
-    if (error.response?.status === 401 && !esAutenticacion && leerToken()) {
+    const tokenActual = leerToken()
+    const tokenSolicitud = String(error.config?.headers?.Authorization || '').replace(/^Bearer\s+/i, '')
+    if (error.response?.status === 401 && !esAutenticacion && tokenActual && tokenSolicitud === tokenActual) {
       borrarSesion()
       window.dispatchEvent(new Event('sonidovivo:sesion-expirada'))
     }
@@ -42,4 +44,5 @@ export function obtenerMensajeError(error) {
   if (error.code === 'ERR_NETWORK') return 'No se pudo conectar con la API. Comprueba el proxy /api y la conectividad entre servidores.'
   return 'No fue posible completar la solicitud. Intenta nuevamente.'
 }
+
 
