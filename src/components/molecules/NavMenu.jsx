@@ -9,9 +9,10 @@ function NavMenu(props) {
     <div className="d-flex justify-content-center justify-content-md-end align-items-center flex-wrap gap-2">
       {items.map((item, index) => (
         <Boton
-          key={index}
+          key={item.path || item.label || index}
           label={item.label}
           variant={item.variant || "text"}
+          className={item.className || ""}
           onClick={() => (item.onClick ? item.onClick() : navigate(item.path))}
         />
       ))}

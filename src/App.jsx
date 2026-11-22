@@ -50,13 +50,14 @@ const navigationConfig = [
     variant: "text",
     soloInvitado: true,
   },
-  { label: "STAFF", path: "/staff-login", variant: "text" },
+  { label: "STAFF", path: "/staff-login", variant: "text", soloStaffInvitado: true },
 ];
 
 const navigationAdminConfig = [
   { label: "Productos", path: "/admin", variant: "text" },
   { label: "Pedidos", path: "/pedidos", variant: "text" },
   { label: "Usuarios", path: "/usuarios", variant: "text" },
+  { label: "Ver tienda", path: "/", variant: "warning", className: "nav-store-access" },
 ];
 
 function App() {
@@ -172,3 +173,4 @@ function App() {
 }
 
 export default App;
+

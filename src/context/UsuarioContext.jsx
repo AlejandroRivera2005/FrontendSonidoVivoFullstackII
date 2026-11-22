@@ -7,13 +7,38 @@ const UsuariosContext = createContext(null)
 export function UsuariosProvider(props) {
   const { usuario } = useSesion()
   const [usuarios, setUsuarios] = useState([])
+  const [cargando, setCargando] = useState(false)
+  const [error, setError] = useState(null)
+
+  async function recargar() {
+    if (!usuario || usuario.rol !== 'admin') { setUsuarios([]); return [] }
+    setCargando(true)
+    setError(null)
+    try {
+      const lista = await usuarioService.listarUsuarios()
+      setUsuarios(lista)
+      return lista
+    } catch (err) {
+      setError(err)
+      throw err
+    } finally {
+      setCargando(false)
+    }
+  }
 
   useEffect(() => {
-    if (!usuario || usuario.rol !== 'admin') { setUsuarios([]); return }
+    if (!usuario || usuario.rol !== 'admin') {
+      setUsuarios([])
+      setError(null)
+      setCargando(false)
+      return
+    }
     const controller = new AbortController()
+    setCargando(true)
     usuarioService.listarUsuarios(controller.signal)
-      .then(setUsuarios)
-      .catch(() => {})
+      .then((lista) => { if (!controller.signal.aborted) { setUsuarios(lista); setError(null) } })
+      .catch((err) => { if (!controller.signal.aborted && err.code !== 'ERR_CANCELED') setError(err) })
+      .finally(() => { if (!controller.signal.aborted) setCargando(false) })
     return () => controller.abort()
   }, [usuario?.id, usuario?.rol])
 
@@ -34,7 +59,7 @@ export function UsuariosProvider(props) {
     setUsuarios((actual) => actual.filter((u) => u.id !== id))
   }
 
-  return <UsuariosContext.Provider value={{ usuarios, crear, actualizar, eliminar }}>{props.children}</UsuariosContext.Provider>
+  return <UsuariosContext.Provider value={{ usuarios, cargando, error, recargar, crear, actualizar, eliminar }}>{props.children}</UsuariosContext.Provider>
 }
 
 export function useUsuarios() {

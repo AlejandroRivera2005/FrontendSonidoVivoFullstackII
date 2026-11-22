@@ -14,20 +14,23 @@ function ClienteLayoutTemplate(props) {
     navigate("/");
   };
 
-  const itemsVisibles = props.menuItems.filter((item) =>
-    usuario ? !item.soloInvitado : !item.soloUsuario
-  );
+  const esAdmin = usuario?.rol === "admin";
+  const itemsVisibles = (props.menuItems || []).filter((item) => {
+    if (item.soloInvitado && usuario) return false;
+    if (item.soloUsuario && !usuario) return false;
+    if (item.soloStaffInvitado && esAdmin) return false;
+    return true;
+  });
 
-  const items = usuario
-    ? [
-        ...itemsVisibles,
-        {
-          label: `Cerrar sesión (${usuario.nombre.split(" ")[0]})`,
-          variant: "text",
-          onClick: handleCerrarSesion,
-        },
-      ]
-    : itemsVisibles;
+  const items = [
+    ...itemsVisibles,
+    ...(esAdmin ? [{ label: "Panel de administración", path: "/admin", variant: "warning", className: "nav-admin-access" }] : []),
+    ...(usuario ? [{
+      label: `Cerrar sesión (${usuario.nombre?.split(" ")[0] || "Usuario"})`,
+      variant: "text",
+      onClick: handleCerrarSesion,
+    }] : []),
+  ];
 
   return (
     <>

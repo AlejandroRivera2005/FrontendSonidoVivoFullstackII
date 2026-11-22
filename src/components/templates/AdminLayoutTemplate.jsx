@@ -6,7 +6,7 @@ function AdminLayoutTemplate(props) {
   return (
     <>
       <Navbar brandName="Sonido Vivo · Admin" brandPath="/admin" menuItems={props.menuItems} />
-      <main style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
+      <main className="admin-main-content">
         <Outlet />
       </main>
       <FooterAdmin />

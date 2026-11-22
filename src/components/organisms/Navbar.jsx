@@ -12,8 +12,7 @@ function Navbar(props) {
         <Row className="align-items-center justify-content-between py-3">        
           <Col xs={12} md={4} className="text-center text-md-start mb-3 mb-md-0">
             <h2 
-              className="m-0 text-white" 
-              style={{ cursor: 'pointer', fontSize: '1.4rem', fontWeight: '700' }} 
+              className="m-0 text-white navbar-brand-link" 
               onClick={() => navigate(brandPath)}
             >
               {props.brandName || "Sonido Vivo"}

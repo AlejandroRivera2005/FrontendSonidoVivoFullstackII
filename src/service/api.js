@@ -1,25 +1,26 @@
 import axios from 'axios'
 import { leerToken, borrarSesion } from './sesionService'
 
-export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://54.88.63.9:3000/api',
-  timeout: 10000,
-})
+const urlApi = (import.meta.env.VITE_API_URL || '/api').replace(/\/+$/, '')
+export const api = axios.create({ baseURL: urlApi, timeout: 15000 })
 
 api.interceptors.request.use((config) => {
+  const ruta = String(config.url || '')
+  const metodo = String(config.method || 'get').toLowerCase()
+  const publica = (metodo === 'get' && /^\/productos(?:\/|\?|$)/.test(ruta)) ||
+    /^\/auth\/(?:login|registro)(?:\?|$)/.test(ruta)
   const token = leerToken()
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  } else {
-    delete config.headers.Authorization
-  }
+  if (token && !publica) config.headers.Authorization = `Bearer ${token}`
+  else delete config.headers.Authorization
   return config
 })
 
 api.interceptors.response.use(
   (respuesta) => respuesta,
   (error) => {
-    if (error.response?.status === 401 && leerToken()) {
+    const ruta = String(error.config?.url || '')
+    const esAutenticacion = /^\/auth\/(?:login|registro)(?:\?|$)/.test(ruta)
+    if (error.response?.status === 401 && !esAutenticacion && leerToken()) {
       borrarSesion()
       window.dispatchEvent(new Event('sonidovivo:sesion-expirada'))
     }
@@ -34,9 +35,11 @@ export function obtenerMensajeError(error) {
     const detalles = datos?.detalles && typeof datos.detalles === 'object'
       ? Object.values(datos.detalles).flat().join(' ')
       : ''
-    return [mensaje || `Error HTTP ${error.response.status}`, detalles]
-      .filter(Boolean).join(' ')
+    return [mensaje || `Error HTTP ${error.response.status}`, detalles].filter(Boolean).join(' ')
   }
-  if (error.code === 'ECONNABORTED') return 'La API tardó demasiado en responder.'
-  return 'No fue posible contactar la API. Comprueba el servidor y la conexión.'
+  if (error.code === 'ERR_CANCELED') return 'Solicitud cancelada.'
+  if (error.code === 'ECONNABORTED') return 'La API tardó demasiado en responder. Intenta nuevamente.'
+  if (error.code === 'ERR_NETWORK') return 'No se pudo conectar con la API. Comprueba el proxy /api y la conectividad entre servidores.'
+  return 'No fue posible completar la solicitud. Intenta nuevamente.'
 }
+
