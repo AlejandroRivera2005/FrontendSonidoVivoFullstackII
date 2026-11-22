@@ -1,32 +1,25 @@
 import { Container, Row, Col } from "react-bootstrap";
 
-function MenuPageTemplate({
-  titulo,
-  descripcion,
-  filtros,
-  acciones,
-  items = [],
-  renderItem,
-}) {
-  const listaItems = Array.isArray(items) ? items : [];
+function MenuPageTemplate(props) {
+  const listaItems = Array.isArray(props.items) ? props.items : [];
 
   return (
     <Container className="py-4">
       <Row className="mb-4 align-items-center">
-        <Col xs={12} md={acciones ? 8 : 12}>
-          <h1 className="fw-bold">{titulo}</h1>
-          {descripcion && <p className="text-muted mb-0">{descripcion}</p>}
+        <Col xs={12} md={props.acciones ? 8 : 12}>
+          <h1 className="fw-bold">{props.titulo}</h1>
+          {props.descripcion && <p className="text-muted mb-0">{props.descripcion}</p>}
         </Col>
-        {acciones && (
+        {props.acciones && (
           <Col xs={12} md={4} className="text-md-end mt-3 mt-md-0">
-            {acciones}
+            {props.acciones}
           </Col>
         )}
       </Row>
 
-      {filtros && (
+      {props.filtros && (
         <Row className="mb-4">
-          <Col xs={12}>{filtros}</Col>
+          <Col xs={12}>{props.filtros}</Col>
         </Row>
       )}
 
@@ -38,7 +31,7 @@ function MenuPageTemplate({
         ) : (
           listaItems.map((item, index) => (
             <Col key={item.id || index} xs={12} sm={6} md={4} lg={3}>
-              {typeof renderItem === "function" ? renderItem(item) : null}
+              {typeof props.renderItem === "function" ? props.renderItem(item) : null}
             </Col>
           ))
         )}

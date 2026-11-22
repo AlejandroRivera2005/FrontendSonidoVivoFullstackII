@@ -250,3 +250,40 @@ textarea.form-control {
 .volver-catalogo-btn:hover {
   background: rgba(31, 64, 104, 0.08);
 }
+
+main.main-content {
+  min-width: 0;
+}
+
+.form-page {
+  width: 100%;
+  max-width: 960px;
+  min-width: 0;
+}
+
+.form-page__card {
+  width: 100%;
+  min-width: 0;
+}
+
+.form-page__card form,
+.form-page__card .form-control,
+.form-page__card .form-select {
+  width: 100%;
+  min-width: 0;
+}
+
+.form-page__card .form-label {
+  display: block;
+  overflow-wrap: normal;
+}
+
+@media (max-width: 575.98px) {
+  main.main-content {
+    padding: 16px;
+  }
+
+  .form-page__card {
+    padding: 20px !important;
+  }
+}

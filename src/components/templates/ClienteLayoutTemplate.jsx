@@ -32,7 +32,7 @@ function ClienteLayoutTemplate(props) {
   return (
     <>
       <Navbar brandName="Sonido Vivo" menuItems={items} />
-      <main style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
+      <main className="main-content">
         <Outlet />
       </main>
       <Footer />

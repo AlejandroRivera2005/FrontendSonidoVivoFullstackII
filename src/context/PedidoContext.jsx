@@ -4,7 +4,7 @@ import { useSesion } from './SesionContext'
 
 const PedidosContext = createContext(null)
 
-export function PedidosProvider({ children }) {
+export function PedidosProvider(props) {
   const { usuario } = useSesion()
   const [pedidos, setPedidos] = useState([])
   const [cargando, setCargando] = useState(false)
@@ -56,7 +56,7 @@ export function PedidosProvider({ children }) {
     setPedidos((actual) => actual.filter((p) => p.id !== id))
   }
 
-  return <PedidosContext.Provider value={{ pedidos, cargando, error, recargar, crear, actualizar, eliminar }}>{children}</PedidosContext.Provider>
+  return <PedidosContext.Provider value={{ pedidos, cargando, error, recargar, crear, actualizar, eliminar }}>{props.children}</PedidosContext.Provider>
 }
 
 export function usePedidos() {

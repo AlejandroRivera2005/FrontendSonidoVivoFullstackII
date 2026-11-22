@@ -4,7 +4,7 @@ import { useSesion } from './SesionContext'
 
 const UsuariosContext = createContext(null)
 
-export function UsuariosProvider({ children }) {
+export function UsuariosProvider(props) {
   const { usuario } = useSesion()
   const [usuarios, setUsuarios] = useState([])
 
@@ -34,7 +34,7 @@ export function UsuariosProvider({ children }) {
     setUsuarios((actual) => actual.filter((u) => u.id !== id))
   }
 
-  return <UsuariosContext.Provider value={{ usuarios, crear, actualizar, eliminar }}>{children}</UsuariosContext.Provider>
+  return <UsuariosContext.Provider value={{ usuarios, crear, actualizar, eliminar }}>{props.children}</UsuariosContext.Provider>
 }
 
 export function useUsuarios() {

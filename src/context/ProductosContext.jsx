@@ -3,7 +3,7 @@ import * as productoService from '../service/productoService'
 
 const ProductosContext = createContext(null)
 
-export function ProductosProvider({ children }) {
+export function ProductosProvider(props) {
   const [productos, setProductos] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
@@ -41,7 +41,7 @@ export function ProductosProvider({ children }) {
     setProductos((actual) => actual.filter((p) => p.id !== id))
   }
 
-  return <ProductosContext.Provider value={{ productos, cargando, error, recargar, crear, actualizar, eliminar }}>{children}</ProductosContext.Provider>
+  return <ProductosContext.Provider value={{ productos, cargando, error, recargar, crear, actualizar, eliminar }}>{props.children}</ProductosContext.Provider>
 }
 
 export function useProductos() {

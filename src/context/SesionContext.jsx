@@ -3,7 +3,7 @@ import * as sesionService from '../service/sesionService'
 
 const SesionContext = createContext(null)
 
-export function SesionProvider({ children }) {
+export function SesionProvider(props) {
   const [usuario, setUsuario] = useState(null)
   const [verificando, setVerificando] = useState(true)
 
@@ -34,7 +34,7 @@ export function SesionProvider({ children }) {
     setUsuario(null)
   }
 
-  return <SesionContext.Provider value={{ usuario, verificando, iniciarSesion, cerrarSesion }}>{children}</SesionContext.Provider>
+  return <SesionContext.Provider value={{ usuario, verificando, iniciarSesion, cerrarSesion }}>{props.children}</SesionContext.Provider>
 }
 
 export function useSesion() {
