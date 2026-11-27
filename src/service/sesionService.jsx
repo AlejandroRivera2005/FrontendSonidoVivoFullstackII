@@ -4,8 +4,13 @@ const clave = 'sonidovivo_sesion_api'
 
 export function leerSesion() {
   try {
-    const sesion = JSON.parse(localStorage.getItem(clave))
-    return sesion?.token && sesion?.usuario ? sesion : null
+    const sesion = JSON.parse(
+      localStorage.getItem(clave)
+    )
+
+    return sesion?.token && sesion?.usuario
+      ? sesion
+      : null
   } catch {
     return null
   }
@@ -16,7 +21,10 @@ export function leerToken() {
 }
 
 export function guardarSesion(sesion) {
-  localStorage.setItem(clave, JSON.stringify(sesion))
+  localStorage.setItem(
+    clave,
+    JSON.stringify(sesion)
+  )
 }
 
 export function borrarSesion() {
@@ -24,12 +32,30 @@ export function borrarSesion() {
 }
 
 export async function iniciarSesion(email, password) {
-  const respuesta = await api.post('/auth/login', { email, password })
-  guardarSesion({ token: respuesta.data.token, usuario: respuesta.data.usuario })
-  return respuesta.data.usuario
+  const respuesta = await api.post('/auth/login', {
+    email,
+    password,
+  })
+
+  const usuario = respuesta.data?.usuario
+  const token = respuesta.data?.token
+
+  if (!usuario || !token) {
+    throw new Error(
+      'El servidor no devolvió una sesión válida.'
+    )
+  }
+
+  guardarSesion({
+    token,
+    usuario,
+  })
+
+  return usuario
 }
 
 export async function obtenerPerfil() {
   const respuesta = await api.get('/auth/perfil')
+
   return respuesta.data
 }
