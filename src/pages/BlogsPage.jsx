@@ -92,6 +92,7 @@ function BlogsPage() {
 
   return (
     <MenuPageTemplate
+      tipo="blog"
       titulo={titulo}
       descripcion="Entérate de las últimas novedades, guías y publicaciones de interés."
       filtros={componenteFiltros}

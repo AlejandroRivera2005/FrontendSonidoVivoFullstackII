@@ -87,7 +87,7 @@ function UsuariosSonidoVivo() {
   };
 
   return (
-    <Container className="py-4">
+    <Container fluid className="py-4">
       <Row className="mb-4">
         <Col xs={12}>
           <h1 className="fw-bold">Administrar usuarios</h1>
@@ -98,7 +98,7 @@ function UsuariosSonidoVivo() {
       </Row>
 
       <Row className="g-4">
-        <Col xs={12} md={4}>
+        <Col xs={12} lg={4} xxl={3}>
           <div className="p-3 p-md-4 border rounded bg-white shadow-sm">
             <h3 className="h5 mb-3">
               {idEditando !== null ? "Editar usuario" : "Nuevo usuario"}
@@ -130,7 +130,7 @@ function UsuariosSonidoVivo() {
                 name="password"
                 value={form.password}
                 onChange={handleChange}
-                placeholder={idEditando !== null ? "Dejar vacío para conservar" : "Mínimo 6 caracteres"}
+                placeholder={form.rol === "admin" ? "Mínimo 12 caracteres al asignar admin o cambiar clave" : idEditando !== null ? "Dejar vacío para conservar" : "Mínimo 6 caracteres"}
                 autoComplete="new-password"
                 error={errors.password}
               />
@@ -161,18 +161,18 @@ function UsuariosSonidoVivo() {
           </div>
         </Col>
 
-        <Col xs={12} md={8}>
+        <Col xs={12} lg={8} xxl={9}>
           <div className="p-3 p-md-4 border rounded bg-white shadow-sm">
             <h3 className="h5 mb-3">Usuarios ({usuariosCtx.usuarios.length})</h3>
 
             {usuariosCtx.usuarios.length === 0 ? (
               <p className="text-muted mb-0">No hay usuarios registrados.</p>
             ) : (
-              <ul className="list-group">
+              <ul className="record-grid">
                 {usuariosCtx.usuarios.map((u) => (
                   <li
                     key={u.id}
-                    className="list-group-item d-flex flex-wrap align-items-center gap-3"
+                    className="list-group-item record-grid__item d-flex flex-wrap align-items-center gap-3"
                   >
                     <div className="flex-grow-1">
                       <div className="fw-semibold text-break">{u.nombre}</div>
@@ -181,7 +181,7 @@ function UsuariosSonidoVivo() {
                         {u.rol === "admin" ? "Administrador" : "Cliente"}
                       </span></div>
                     </div>
-                    <div className="d-flex gap-2">
+                    <div className="d-flex flex-wrap gap-2">
                       <Boton label="Editar" variant="outline-primary" onClick={() => editar(u)} />
                       {Number(u.id) !== Number(sesionActual?.id) && <Boton label="Eliminar" variant="danger" onClick={() => eliminar(u)} />}
                     </div>

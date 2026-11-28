@@ -31,31 +31,19 @@ export function borrarSesion() {
   localStorage.removeItem(clave)
 }
 
-export async function iniciarSesion(email, password) {
-  const respuesta = await api.post('/auth/login', {
-    email,
-    password,
-  })
-
-  const usuario = respuesta.data?.usuario
-  const token = respuesta.data?.token
-
-  if (!usuario || !token) {
-    throw new Error(
-      'El servidor no devolvió una sesión válida.'
-    )
-  }
-
-  guardarSesion({
-    token,
-    usuario,
-  })
-
-  return usuario
+export async function iniciarSesion(email, password, signal) {
+  const respuesta = await api.post('/auth/login', { email, password }, { signal })
+  const { usuario, token } = respuesta.data ?? {}
+  if (!usuario || !token) throw new Error('El servidor no devolvió una sesión válida.')
+  return { usuario, token }
 }
 
-export async function obtenerPerfil() {
-  const respuesta = await api.get('/auth/perfil')
+export async function registrar(datos) {
+  const respuesta = await api.post('/auth/registro', datos)
+  return respuesta.data.usuario
+}
 
+export async function obtenerPerfil(signal) {
+  const respuesta = await api.get('/auth/perfil', { signal })
   return respuesta.data
 }

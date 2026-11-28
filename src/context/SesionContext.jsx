@@ -4,51 +4,73 @@ import * as sesionService from '../service/sesionService'
 const SesionContext = createContext(null)
 
 export function SesionProvider(props) {
-  const [usuario, setUsuario] = useState(() => sesionService.leerSesion()?.usuario ?? null)
+  const [sesion, setSesion] = useState(sesionService.leerSesion)
   const [verificando, setVerificando] = useState(() => Boolean(sesionService.leerToken()))
   const version = useRef(0)
-
-  useEffect(() => {
-    let activo = true
-    const actual = version.current
-    const tokenInicial = sesionService.leerToken()
-    const expirar = () => {
-      version.current += 1
-      if (activo) { setUsuario(null); setVerificando(false) }
-    }
-    window.addEventListener('sonidovivo:sesion-expirada', expirar)
-    if (tokenInicial) {
-      sesionService.obtenerPerfil()
-        .then((perfil) => {
-          if (activo && version.current === actual && sesionService.leerToken() === tokenInicial) setUsuario(perfil)
-        })
-        .catch((error) => {
-          if (error.response?.status === 401 && activo && version.current === actual && sesionService.leerToken() === tokenInicial) {
-            sesionService.borrarSesion()
-            setUsuario(null)
-          }
-        })
-        .finally(() => { if (activo && version.current === actual) setVerificando(false) })
-    } else setVerificando(false)
-    return () => { activo = false; window.removeEventListener('sonidovivo:sesion-expirada', expirar) }
-  }, [])
-
-  async function iniciarSesion(email, password) {
-    const autenticado = await sesionService.iniciarSesion(email, password)
-    version.current += 1
-    setUsuario(autenticado)
-    setVerificando(false)
-    return autenticado
-  }
+  const solicitud = useRef(null)
 
   function cerrarSesion() {
     version.current += 1
+    solicitud.current?.abort()
     sesionService.borrarSesion()
-    setUsuario(null)
+    setSesion(null)
     setVerificando(false)
   }
 
-  return <SesionContext.Provider value={{ usuario, verificando, iniciarSesion, cerrarSesion }}>{props.children}</SesionContext.Provider>
+  useEffect(() => {
+    const controller = new AbortController()
+    const actual = version.current
+    const token = sesionService.leerToken()
+    const expirar = () => cerrarSesion()
+    window.addEventListener('sonidovivo:sesion-expirada', expirar)
+    if (token) {
+      sesionService.obtenerPerfil(controller.signal)
+        .then((usuario) => {
+          if (controller.signal.aborted || version.current !== actual || sesionService.leerToken() !== token) return
+          const nueva = { usuario, token }
+          sesionService.guardarSesion(nueva)
+          setSesion(nueva)
+        })
+        .catch(() => {
+          if (!controller.signal.aborted && version.current === actual && sesionService.leerToken() === token) cerrarSesion()
+        })
+        .finally(() => {
+          if (!controller.signal.aborted && version.current === actual) setVerificando(false)
+        })
+    }
+    return () => {
+      controller.abort()
+      solicitud.current?.abort()
+      window.removeEventListener('sonidovivo:sesion-expirada', expirar)
+    }
+  }, [])
+
+  async function iniciarSesion(email, password) {
+    cerrarSesion()
+    const actual = version.current
+    const controller = new AbortController()
+    solicitud.current = controller
+    try {
+      const nueva = await sesionService.iniciarSesion(email, password, controller.signal)
+      if (controller.signal.aborted || version.current !== actual) {
+        throw Object.assign(new Error('Solicitud cancelada.'), { code: 'ERR_CANCELED' })
+      }
+      sesionService.guardarSesion(nueva)
+      setSesion(nueva)
+      return nueva.usuario
+    } finally {
+      if (solicitud.current === controller) solicitud.current = null
+    }
+  }
+
+  function sincronizarUsuario(usuario, token) {
+    if (!token || token !== sesionService.leerToken() || sesionService.leerSesion()?.usuario.id !== usuario.id) return
+    const nueva = { usuario, token }
+    sesionService.guardarSesion(nueva)
+    setSesion(nueva)
+  }
+
+  return <SesionContext.Provider value={{ usuario: sesion?.usuario ?? null, token: sesion?.token ?? null, verificando, iniciarSesion, cerrarSesion, sincronizarUsuario }}>{props.children}</SesionContext.Provider>
 }
 
 export function useSesion() {

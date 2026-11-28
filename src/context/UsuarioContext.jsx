@@ -1,65 +1,44 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext } from 'react'
 import * as usuarioService from '../service/usuarioService'
 import { useSesion } from './SesionContext'
+import { useListaProtegida } from '../hooks/useListaProtegida'
 
 const UsuariosContext = createContext(null)
 
 export function UsuariosProvider(props) {
-  const { usuario } = useSesion()
-  const [usuarios, setUsuarios] = useState([])
-  const [cargando, setCargando] = useState(false)
-  const [error, setError] = useState(null)
-
-  async function recargar() {
-    if (!usuario || usuario.rol !== 'admin') { setUsuarios([]); return [] }
-    setCargando(true)
-    setError(null)
-    try {
-      const lista = await usuarioService.listarUsuarios()
-      setUsuarios(lista)
-      return lista
-    } catch (err) {
-      setError(err)
-      throw err
-    } finally {
-      setCargando(false)
-    }
-  }
-
-  useEffect(() => {
-    if (!usuario || usuario.rol !== 'admin') {
-      setUsuarios([])
-      setError(null)
-      setCargando(false)
-      return
-    }
-    const controller = new AbortController()
-    setCargando(true)
-    usuarioService.listarUsuarios(controller.signal)
-      .then((lista) => { if (!controller.signal.aborted) { setUsuarios(lista); setError(null) } })
-      .catch((err) => { if (!controller.signal.aborted && err.code !== 'ERR_CANCELED') setError(err) })
-      .finally(() => { if (!controller.signal.aborted) setCargando(false) })
-    return () => controller.abort()
-  }, [usuario?.id, usuario?.rol])
+  const sesion = useSesion()
+  const clave = !sesion.verificando && sesion.usuario?.rol === 'admin' ? sesion.token : null
+  const cargar = usuarioService.listarUsuarios
+  const estado = useListaProtegida(clave, cargar)
 
   async function crear(datos) {
-    const nuevo = await usuarioService.crearUsuario(datos)
-    setUsuarios((actual) => [...actual, nuevo])
-    return nuevo
+    estado.exigirSesion()
+    const resultado = await usuarioService.crearUsuario(datos)
+    estado.exigirSesion()
+    estado.refrescar()
+    return resultado
   }
 
   async function actualizar(id, cambios) {
-    const actualizado = await usuarioService.actualizarUsuario(id, cambios)
-    setUsuarios((actual) => actual.map((u) => u.id === id ? actualizado : u))
-    return actualizado
+    estado.exigirSesion()
+    const resultado = await usuarioService.actualizarUsuario(id, cambios)
+    estado.exigirSesion()
+    if (id === sesion.usuario?.id && estado.vigente()) {
+      if (cambios.password) sesion.cerrarSesion()
+      else sesion.sincronizarUsuario(resultado, clave)
+    }
+    estado.refrescar()
+    return resultado
   }
 
   async function eliminar(id) {
+    estado.exigirSesion()
     await usuarioService.eliminarUsuario(id)
-    setUsuarios((actual) => actual.filter((u) => u.id !== id))
+    estado.exigirSesion()
+    estado.refrescar()
   }
 
-  return <UsuariosContext.Provider value={{ usuarios, cargando, error, recargar, crear, actualizar, eliminar }}>{props.children}</UsuariosContext.Provider>
+  return <UsuariosContext.Provider value={{ usuarios: estado.lista, cargando: estado.cargando, error: estado.error, recargar: estado.recargar, crear, actualizar, eliminar }}>{props.children}</UsuariosContext.Provider>
 }
 
 export function useUsuarios() {

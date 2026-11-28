@@ -1,29 +1,40 @@
-import { useNavigate } from 'react-router-dom';
-import { Container, Row, Col } from 'react-bootstrap';
-import NavMenu from '../molecules/NavMenu';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import NavMenu from "../molecules/NavMenu";
 
 function Navbar(props) {
-  const navigate = useNavigate();
-  const brandPath = props.brandPath ?? '/';
+  const [menuAbierto, setMenuAbierto] = useState(false);
+
+  function cerrarMenu() {
+    setMenuAbierto(false);
+  }
 
   return (
-    <header className="navbar-banner sticky-top">
-      <Container>
-        <Row className="align-items-center justify-content-between py-3">        
-          <Col xs={12} md={4} className="text-center text-md-start mb-3 mb-md-0">
-            <h2 
-              className="m-0 text-white navbar-brand-link" 
-              onClick={() => navigate(brandPath)}
-            >
-              {props.brandName || "Sonido Vivo"}
-            </h2>
-          </Col>
-          <Col xs={12} md={8}>
-            <NavMenu menuItems={props.menuItems} />
-          </Col>
-
-        </Row>
-      </Container>
+    <header className="navbar-banner">
+      <div className="navbar-container">
+        {props.admin ? (
+          <span className="navbar-brand-link">Sonido Vivo · Admin</span>
+        ) : (
+          <Link to="/" className="navbar-brand-link" aria-label="Sonido Vivo, inicio" onClick={cerrarMenu}>
+            Sonido Vivo
+          </Link>
+        )}
+        <button
+          type="button"
+          className="navbar-toggle"
+          aria-controls="navegacion-principal"
+          aria-expanded={menuAbierto}
+          onClick={() => setMenuAbierto((abierto) => !abierto)}
+        >
+          {menuAbierto ? "Cerrar menú" : "Menú"}
+        </button>
+        <div id="navegacion-principal" className={`navbar-actions${menuAbierto ? " navbar-actions--open" : ""}`}>
+          {props.nombreUsuario && (
+            <span className="navbar-user">{props.nombreUsuario}</span>
+          )}
+          <NavMenu menuItems={props.menuItems} onNavigate={cerrarMenu} />
+        </div>
+      </div>
     </header>
   );
 }

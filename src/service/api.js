@@ -25,7 +25,8 @@ function esRutaPublica(config) {
   if (metodo === 'post') {
     return (
       ruta === '/auth/login' ||
-      ruta === '/auth/registro'
+      ruta === '/auth/registro' ||
+      ruta === '/contacto'
     )
   }
 
@@ -63,7 +64,8 @@ api.interceptors.request.use(
 
     return config
   },
-  (error) => Promise.reject(error)
+  (error) => { throw error },
+  { synchronous: true }
 )
 
 api.interceptors.response.use(
@@ -133,5 +135,5 @@ export function obtenerMensajeError(error) {
     return 'No se pudo conectar con la API. Comprueba el proxy /api y la conectividad entre servidores.'
   }
 
-  return 'No fue posible completar la solicitud. Intenta nuevamente.'
+  return error instanceof Error && !error.isAxiosError ? error.message : 'No fue posible completar la solicitud. Intenta nuevamente.'
 }

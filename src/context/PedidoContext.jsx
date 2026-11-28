@@ -1,70 +1,40 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext } from 'react'
 import * as pedidoService from '../service/pedidoService'
 import { useSesion } from './SesionContext'
+import { useListaProtegida } from '../hooks/useListaProtegida'
 
 const PedidosContext = createContext(null)
 
 export function PedidosProvider(props) {
-  const { usuario } = useSesion()
-  const [pedidos, setPedidos] = useState([])
-  const [cargando, setCargando] = useState(false)
-  const [error, setError] = useState(null)
-
-  async function recargar() {
-    if (!usuario) { setPedidos([]); setError(null); setCargando(false); return [] }
-    setCargando(true)
-    setError(null)
-    try {
-      const lista = usuario.rol === 'admin'
-        ? await pedidoService.listarTodosPedidos()
-        : await pedidoService.listarPedidos()
-      setPedidos(lista)
-      return lista
-    } catch (err) {
-      setError(err)
-      throw err
-    } finally {
-      setCargando(false)
-    }
-  }
-
-  useEffect(() => {
-    if (!usuario) {
-      setPedidos([])
-      setError(null)
-      setCargando(false)
-      return
-    }
-    const controller = new AbortController()
-    setCargando(true)
-    const cargar = usuario.rol === 'admin'
-      ? pedidoService.listarTodosPedidos
-      : pedidoService.listarPedidos
-    cargar(controller.signal)
-      .then((lista) => { if (!controller.signal.aborted) { setPedidos(lista); setError(null) } })
-      .catch((err) => { if (!controller.signal.aborted && err.code !== 'ERR_CANCELED') setError(err) })
-      .finally(() => { if (!controller.signal.aborted) setCargando(false) })
-    return () => controller.abort()
-  }, [usuario?.id, usuario?.rol])
+  const sesion = useSesion()
+  const clave = !sesion.verificando && sesion.usuario ? sesion.token : null
+  const cargar = sesion.usuario?.rol === 'admin' ? pedidoService.listarTodosPedidos : pedidoService.listarPedidos
+  const estado = useListaProtegida(clave, cargar)
 
   async function crear(datos) {
-    const pedido = await pedidoService.crearPedido(datos)
-    setPedidos((actual) => [...actual, pedido])
-    return pedido
+    estado.exigirSesion()
+    const resultado = await pedidoService.crearPedido(datos)
+    estado.exigirSesion()
+    estado.refrescar()
+    return resultado
   }
 
   async function actualizar(id, cambios) {
-    const pedido = await pedidoService.actualizarPedido(id, cambios)
-    setPedidos((actual) => actual.map((p) => p.id === id ? pedido : p))
-    return pedido
+    estado.exigirSesion()
+    const resultado = await pedidoService.actualizarPedido(id, cambios)
+    estado.exigirSesion()
+    estado.refrescar()
+    return resultado
   }
 
   async function eliminar(id) {
+    estado.exigirSesion()
     await pedidoService.eliminarPedido(id)
-    setPedidos((actual) => actual.filter((p) => p.id !== id))
+    estado.exigirSesion()
+    estado.refrescar()
   }
 
-  return <PedidosContext.Provider value={{ pedidos, cargando, error, recargar, crear, actualizar, eliminar }}>{props.children}</PedidosContext.Provider>
+  return <PedidosContext.Provider value={{ pedidos: estado.lista, cargando: estado.cargando, error: estado.error, recargar: estado.recargar, crear, actualizar, eliminar }}>{props.children}</PedidosContext.Provider>
 }
 
 export function usePedidos() {

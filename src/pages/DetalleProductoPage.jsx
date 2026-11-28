@@ -20,7 +20,7 @@ function DetalleProductoPage() {
 
   if (!producto) {
     return (
-      <Container className="py-4">
+      <Container fluid className="py-4">
         <h1 className="fw-bold">Producto no encontrado</h1>
         <p className="text-muted">
           El producto que buscas no existe o ya no está disponible.
@@ -55,7 +55,7 @@ function DetalleProductoPage() {
 };
 
   return (
-    <Container className="py-4">
+    <Container fluid className="py-4">
       <Row className="mb-3">
         <Col xs={12}>
           <Boton
@@ -68,7 +68,7 @@ function DetalleProductoPage() {
       </Row>
 
       <Row className="g-4">
-        <Col xs={12} md={6}>
+        <Col xs={12} lg={6}>
           <div className="p-4 border rounded bg-white shadow-sm text-center">
             <img
               src={imagen || imagenRespaldo}
@@ -78,7 +78,7 @@ function DetalleProductoPage() {
           </div>
         </Col>
 
-        <Col xs={12} md={6}>
+        <Col xs={12} lg={6}>
           <div className="mb-2 d-flex gap-2 flex-wrap">
             {categoria && <span className="badge text-bg-secondary">{categoria}</span>}
             {enOferta && <span className="badge text-bg-danger">Oferta</span>}

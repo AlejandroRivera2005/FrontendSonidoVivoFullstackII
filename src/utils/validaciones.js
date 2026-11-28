@@ -8,7 +8,7 @@ export const mensajes = {
   passwordObligatoria: "La contraseña es obligatoria.",
   carritoVacio: "Tu carrito está vacío.",
   precioObligatorio: "El precio es obligatorio.",
-  precioInvalido: "El precio debe ser un número mayor o igual a 1.",
+  precioInvalido: "El precio debe ser un número entero mayor o igual a 0.",
   categoriaObligatoria: "La categoría es obligatoria.",
   stockObligatorio: "El stock es obligatorio.",
   stockInvalido: "El stock debe ser un número entero mayor o igual a 0.",
@@ -34,7 +34,7 @@ export const mensajes = {
   usuarioObligatorio: "Debes seleccionar un usuario.",
   credencialesInvalidas: "Correo o contraseña incorrectos.",
   sesionRequerida: "Debes iniciar sesión para finalizar la compra.",
-  precioAnteriorInvalido: "El precio anterior debe ser un número mayor o igual a 1.",
+  precioAnteriorInvalido: "El precio anterior debe ser un número entero mayor o igual a 0.",
   precioAnteriorMenor: "El precio anterior debe ser mayor al precio de oferta.",
 };
 
@@ -44,15 +44,16 @@ export const esEmailValido = (email) => regex_email.test(email);
 
 export const validarEmail = (email) => {
   if (esVacio(email)) return mensajes.emailObligatorio;
-  if (!esEmailValido(email)) return mensajes.emailInvalido;
+  if (String(email).trim().length > 254) return "El correo no puede superar los 254 caracteres.";
+  if (!esEmailValido(String(email).trim())) return mensajes.emailInvalido;
   return "";
 };
 
 export const validarNombre = (nombre) =>
-  esVacio(nombre) ? mensajes.nombreObligatorio : "";
+  esVacio(nombre) ? mensajes.nombreObligatorio : String(nombre).trim().length > 60 ? "El nombre no puede superar los 60 caracteres." : "";
 
 export const validarMensaje = (mensaje) =>
-  esVacio(mensaje) ? mensajes.mensajeObligatorio : "";
+  esVacio(mensaje) ? mensajes.mensajeObligatorio : String(mensaje).length > 2000 ? "El mensaje no puede superar los 2000 caracteres." : "";
 
 export const validarPassword = (password) =>
   esVacio(password) ? mensajes.passwordObligatoria : "";
@@ -60,26 +61,26 @@ export const validarPassword = (password) =>
 export const validarPrecio = (precio) => {
   if (esVacio(precio)) return mensajes.precioObligatorio;
   const numero = Number(precio);
-  if (!Number.isFinite(numero) || numero < 1) return mensajes.precioInvalido;
+  if (!Number.isSafeInteger(numero) || numero < 0) return mensajes.precioInvalido;
   return "";
 };
 
 export const validarPrecioAnterior = (precioAnterior, precio) => {
   if (esVacio(precioAnterior)) return "";
   const numero = Number(precioAnterior);
-  if (!Number.isFinite(numero) || numero < 1) return mensajes.precioAnteriorInvalido;
+  if (!Number.isSafeInteger(numero) || numero < 0) return mensajes.precioAnteriorInvalido;
   const actual = Number(precio);
   if (Number.isFinite(actual) && numero <= actual) return mensajes.precioAnteriorMenor;
   return "";
 };
 
 export const validarCategoria = (categoria) =>
-  esVacio(categoria) ? mensajes.categoriaObligatoria : "";
+  esVacio(categoria) ? mensajes.categoriaObligatoria : String(categoria).trim().length > 80 ? "La categoría no puede superar los 80 caracteres." : "";
 
 export const validarStock = (stock) => {
   if (esVacio(stock)) return mensajes.stockObligatorio;
   const numero = Number(stock);
-  if (!Number.isInteger(numero) || numero < 0) return mensajes.stockInvalido;
+  if (!Number.isInteger(numero) || numero < 0 || numero > 2147483647) return mensajes.stockInvalido;
   return "";
 };
 
@@ -125,7 +126,7 @@ export const validarFormularioProducto = ({
   descripcion,
 }) =>
   limpiarErrores({
-    nombre: validarNombre(nombre),
+    nombre: esVacio(nombre) ? mensajes.nombreObligatorio : String(nombre).trim().length > 120 ? "El nombre no puede superar los 120 caracteres." : "",
     precio: validarPrecio(precio),
     precioAnterior: validarPrecioAnterior(precioAnterior, precio),
     categoria: validarCategoria(categoria),
@@ -199,6 +200,7 @@ export const validarFormularioEnvio = ({ direccion, comuna }) =>
 export const validarPasswordNueva = (password) => {
   if (esVacio(password)) return mensajes.passwordObligatoria;
   if (String(password).length < 6) return mensajes.passwordCorta;
+  if (String(password).length > 100) return "La contraseña no puede superar los 100 caracteres.";
   return "";
 };
 
@@ -224,7 +226,7 @@ export const validarFormularioUsuario = (
   limpiarErrores({
     nombre: validarNombre(nombre),
     email: validarEmail(String(email ?? "").trim()) || validarEmailUnico(email, usuarios, idActual),
-    password: idActual !== null && !password ? "" : validarPasswordNueva(password),
+    password: rol === "admin" && (idActual === null || password || usuarios.find((u) => u.id === idActual)?.rol !== "admin") && String(password ?? "").length < 12 ? "Para asignar el rol admin o cambiar su contraseña, indica una contraseña nueva de al menos 12 caracteres." : idActual !== null && !password ? "" : validarPasswordNueva(password),
     rol: ["cliente", "admin"].includes(rol) ? "" : "Selecciona un rol válido.",
   });
 

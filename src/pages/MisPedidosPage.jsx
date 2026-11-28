@@ -4,6 +4,7 @@ import Boton from "../components/atoms/boton/Boton";
 import { usePedidos } from "../context/PedidoContext";
 import { useSesion } from "../context/SesionContext";
 import { formatoPrecio } from "../utils/formatoPrecio";
+import { obtenerMensajeError } from "../service/api";
 import { useTituloPagina } from "../hooks/useTituloPagina";
 
 function MisPedidosPage() {
@@ -14,7 +15,7 @@ function MisPedidosPage() {
 
   if (!sesionCtx.usuario) {
     return (
-      <Container className="py-4">
+      <Container fluid className="py-4">
         <h1 className="fw-bold">Mis pedidos</h1>
         <p className="text-muted">
           Debes iniciar sesión para ver tus pedidos.
@@ -39,7 +40,7 @@ function MisPedidosPage() {
   };
 
   return (
-    <Container className="py-4">
+    <Container fluid className="py-4">
       <Row className="mb-4">
         <Col xs={12}>
           <h1 className="fw-bold">Mis pedidos</h1>
@@ -54,7 +55,14 @@ function MisPedidosPage() {
           <div className="p-3 p-md-4 border rounded bg-white shadow-sm">
             <h3 className="h5 mb-3">Pedidos ({misPedidos.length})</h3>
 
-            {misPedidos.length === 0 ? (
+            {pedidosCtx.cargando ? (
+              <p role="status">Cargando pedidos...</p>
+            ) : pedidosCtx.error ? (
+              <div role="alert">
+                <p>{obtenerMensajeError(pedidosCtx.error)}</p>
+                <Boton label="Reintentar" onClick={() => pedidosCtx.recargar().catch(() => {})} />
+              </div>
+            ) : misPedidos.length === 0 ? (
               <div className="d-flex flex-column align-items-start gap-3">
                 <p className="text-muted mb-0">Aún no has realizado pedidos.</p>
                 <Boton
@@ -64,11 +72,11 @@ function MisPedidosPage() {
                 />
               </div>
             ) : (
-              <ul className="list-group">
+              <ul className="record-grid">
                 {misPedidos.map((p) => (
                   <li
                     key={p.id}
-                    className="list-group-item d-flex flex-wrap align-items-center gap-3"
+                    className="list-group-item record-grid__item d-flex flex-wrap align-items-center gap-3"
                   >
                     <div className="flex-grow-1">
                       <div className="fw-semibold text-break">{p.nombre}</div>

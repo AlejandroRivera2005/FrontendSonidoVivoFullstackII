@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import FormField from "../molecules/FormField";
 import Boton from "../atoms/boton/Boton";
 import { validarFormularioLogin } from "../../utils/validaciones";
@@ -6,6 +6,8 @@ import { validarFormularioLogin } from "../../utils/validaciones";
 function LoginForm(props) {
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
+  const [procesando, setProcesando] = useState(false);
+  const bloqueo = useRef(false);
 
   const handleChange = (e) => {
     if (!e || !e.target) return;
@@ -18,8 +20,9 @@ function LoginForm(props) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (bloqueo.current) return;
     const erroresValidacion = validarFormularioLogin(form);
 
     if (Object.keys(erroresValidacion).length > 0) {
@@ -28,7 +31,14 @@ function LoginForm(props) {
     }
 
     setErrors({});
-    if (props.onSubmit) props.onSubmit(form);
+    bloqueo.current = true;
+    setProcesando(true);
+    try {
+      if (props.onSubmit) await props.onSubmit(form);
+    } finally {
+      bloqueo.current = false;
+      setProcesando(false);
+    }
   };
 
   return (
@@ -54,7 +64,7 @@ function LoginForm(props) {
       />
 
       <div className="mt-4">
-        <Boton label="Iniciar Sesión" variant="primary" type="submit" />
+        <Boton label="Iniciar Sesión" variant="primary" type="submit" disabled={procesando} />
       </div>
     </form>
   );

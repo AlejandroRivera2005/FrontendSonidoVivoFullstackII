@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import * as productoService from '../service/productoService'
 
 const ProductosContext = createContext(null)
@@ -7,49 +7,61 @@ export function ProductosProvider(props) {
   const [productos, setProductos] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
+  const secuencia = useRef(0)
 
-  async function recargar() {
+  const recargar = useCallback(async (signal) => {
+    const actual = ++secuencia.current
+    const vigente = () => actual === secuencia.current && !signal?.aborted
     setCargando(true)
     setError(null)
     try {
-      const lista = await productoService.listarProductos()
-      setProductos(lista)
+      const lista = await productoService.listarProductos(signal)
+      if (vigente()) setProductos(lista)
       return lista
     } catch (err) {
-      setError(err)
+      if (vigente()) setError(err)
       throw err
     } finally {
-      setCargando(false)
+      if (vigente()) setCargando(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     const controller = new AbortController()
-    productoService.listarProductos(controller.signal)
-      .then((lista) => { if (!controller.signal.aborted) { setProductos(lista); setError(null) } })
-      .catch((err) => { if (err.code !== 'ERR_CANCELED') setError(err) })
-      .finally(() => { if (!controller.signal.aborted) setCargando(false) })
-    return () => controller.abort()
-  }, [])
+    recargar(controller.signal).catch(() => {})
+    return () => { controller.abort(); secuencia.current += 1 }
+  }, [recargar])
+
+  function invalidarCarga() {
+    secuencia.current += 1
+    setCargando(false)
+  }
 
   async function crear(datos) {
     const producto = await productoService.crearProducto(datos)
-    setProductos((actual) => [...actual, producto])
+    invalidarCarga()
+    setProductos((actual) => [...actual.filter((p) => p.id !== producto.id), producto])
     return producto
   }
 
   async function actualizar(id, cambios) {
     const producto = await productoService.actualizarProducto(id, cambios)
-    setProductos((actual) => actual.map((p) => p.id === id ? producto : p))
+    invalidarCarga()
+    setProductos((actual) => actual.some((p) => p.id === id) ? actual.map((p) => p.id === id ? producto : p) : [...actual, producto])
     return producto
   }
 
   async function eliminar(id) {
     await productoService.eliminarProducto(id)
+    invalidarCarga()
     setProductos((actual) => actual.filter((p) => p.id !== id))
   }
 
   return <ProductosContext.Provider value={{ productos, cargando, error, recargar, crear, actualizar, eliminar }}>{props.children}</ProductosContext.Provider>
+}
+
+export function useProductosOpcional() {
+  return useContext(ProductosContext)
 }
 
 export function useProductos() {

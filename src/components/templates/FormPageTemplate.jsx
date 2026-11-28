@@ -11,7 +11,7 @@ function FormPageTemplate(props) {
       </Row>
 
       <Row className="justify-content-center">
-        <Col xs={12} sm={10} md={8} lg={7} xl={6}>
+        <Col xs={12} md={10} lg={8} xl={7}>
           <div className="form-page__card p-4 border rounded bg-white shadow-sm">
             {props.children}
           </div>

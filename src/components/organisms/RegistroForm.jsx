@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import FormField from "../molecules/FormField";
 import Boton from "../atoms/boton/Boton";
 import { validarFormularioRegistro } from "../../utils/validaciones";
@@ -14,6 +14,8 @@ function RegistroForm(props) {
   const usuarios = props.usuarios ?? [];
   const [form, setForm] = useState(form_inicial);
   const [errors, setErrors] = useState({});
+  const [procesando, setProcesando] = useState(false);
+  const bloqueo = useRef(false);
 
   const handleChange = (e) => {
     if (!e || !e.target) return;
@@ -26,8 +28,9 @@ function RegistroForm(props) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (bloqueo.current) return;
     const erroresValidacion = validarFormularioRegistro(form, usuarios);
 
     if (Object.keys(erroresValidacion).length > 0) {
@@ -36,7 +39,14 @@ function RegistroForm(props) {
     }
 
     setErrors({});
-    if (props.onSubmit) props.onSubmit(form);
+    bloqueo.current = true;
+    setProcesando(true);
+    try {
+      if (props.onSubmit) await props.onSubmit(form);
+    } finally {
+      bloqueo.current = false;
+      setProcesando(false);
+    }
   };
 
   return (
@@ -85,7 +95,7 @@ function RegistroForm(props) {
       />
 
       <div className="mt-4">
-        <Boton label="Registrarse" variant="primary" type="submit" />
+        <Boton label="Registrarse" variant="primary" type="submit" disabled={procesando} />
       </div>
     </form>
   );

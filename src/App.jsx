@@ -14,8 +14,7 @@ import { PedidosProvider } from './context/PedidoContext'
 import { UsuariosProvider } from './context/UsuarioContext'
 import { SesionProvider } from './context/SesionContext'
 
-import ClienteLayoutTemplate from './components/templates/ClienteLayoutTemplate'
-import AdminLayoutTemplate from './components/templates/AdminLayoutTemplate'
+import SiteLayoutTemplate from './components/templates/SiteLayoutTemplate'
 
 import InicioPage from './pages/InicioPage'
 import QuienesSomosPage from './pages/QuienesSomosPage'
@@ -30,70 +29,10 @@ import DetalleProductoPage from './pages/DetalleProductoPage'
 import Error404Page from './pages/Error404'
 import AdminSonidoVivo from './pages/AdminSonidoVivo'
 import PedidosSonidoVivo from './pages/PedidosSonidoVivo'
+import ContactosSonidoVivo from './pages/ContactosSonidoVivo'
 import UsuariosSonidoVivo from './pages/UsuariosSonidoVivo'
 import DetalleBlog from './pages/DetalleBlog'
 import MisPedidosPage from './pages/MisPedidosPage'
-
-const navigationConfig = [
-  {
-    label: 'Inicio',
-    path: '/',
-    variant: 'text',
-  },
-  {
-    label: 'Catálogo',
-    path: '/catalogo',
-    variant: 'text',
-  },
-  {
-    label: 'Mis Pedidos',
-    path: '/mis-pedidos',
-    variant: 'text',
-    soloUsuario: true,
-  },
-  {
-    label: 'Iniciar sesión',
-    path: '/login',
-    variant: 'text',
-    soloInvitado: true,
-  },
-  {
-    label: 'Registrarse',
-    path: '/registro',
-    variant: 'text',
-    soloInvitado: true,
-  },
-  {
-    label: 'STAFF',
-    path: '/staff-login',
-    variant: 'text',
-    soloStaffInvitado: true,
-  },
-]
-
-const navigationAdminConfig = [
-  {
-    label: 'Productos',
-    path: '/admin',
-    variant: 'text',
-  },
-  {
-    label: 'Pedidos',
-    path: '/pedidos',
-    variant: 'text',
-  },
-  {
-    label: 'Usuarios',
-    path: '/usuarios',
-    variant: 'text',
-  },
-  {
-    label: 'Ver tienda',
-    path: '/',
-    variant: 'warning',
-    className: 'nav-store-access',
-  },
-]
 
 function App() {
   return (
@@ -107,9 +46,7 @@ function App() {
 
                   <Route
                     element={
-                      <ClienteLayoutTemplate
-                        menuItems={navigationConfig}
-                      />
+                      <SiteLayoutTemplate />
                     }
                   >
                     <Route
@@ -205,9 +142,7 @@ function App() {
                   >
                     <Route
                       element={
-                        <AdminLayoutTemplate
-                          menuItems={navigationAdminConfig}
-                        />
+                        <SiteLayoutTemplate admin />
                       }
                     >
                       <Route
@@ -224,6 +159,8 @@ function App() {
                         path="/usuarios"
                         element={<UsuariosSonidoVivo />}
                       />
+
+                      <Route path="/contactos" element={<ContactosSonidoVivo />} />
                     </Route>
                   </Route>
 

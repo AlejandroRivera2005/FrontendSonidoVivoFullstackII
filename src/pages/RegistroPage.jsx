@@ -2,18 +2,17 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import FormPageTemplate from "../components/templates/FormPageTemplate";
 import RegistroForm from "../components/organisms/RegistroForm";
-import { useUsuarios } from "../context/UsuarioContext";
+import { registrar } from "../service/sesionService";
 import { obtenerMensajeError } from "../service/api";
 import { useTituloPagina } from "../hooks/useTituloPagina";
 
 function RegistroPage() {
   useTituloPagina("Registrarse");
   const navigate = useNavigate();
-  const usuariosCtx = useUsuarios();
 
   const handleRegistro = async (datos) => {
     try {
-    await usuariosCtx.crear({
+    await registrar({
       nombre: datos.nombre.trim(),
       email: datos.email.trim().toLowerCase(),
       password: datos.password,
@@ -30,7 +29,7 @@ function RegistroPage() {
       titulo="Crear cuenta"
       descripcion="Completa tus datos para registrarte y poder gestionar tus compras."
     >
-      <RegistroForm onSubmit={handleRegistro} usuarios={usuariosCtx.usuarios} />
+      <RegistroForm onSubmit={handleRegistro} />
     </FormPageTemplate>
   );
 }

@@ -95,7 +95,7 @@ function AdminSonidoVivo() {
   };
 
   return (
-    <Container className="py-4">
+    <Container fluid className="py-4">
       <Row className="mb-4">
         <Col xs={12}>
           <h1 className="fw-bold">Administrar productos</h1>
@@ -106,7 +106,7 @@ function AdminSonidoVivo() {
       </Row>
 
       <Row className="g-4">
-        <Col xs={12} md={4}>
+        <Col xs={12} lg={4} xxl={3}>
           <div className="p-3 p-md-4 border rounded bg-white shadow-sm">
             <h3 className="h5 mb-3">
               {idEditando !== null ? "Editar producto" : "Nuevo producto"}
@@ -129,7 +129,7 @@ function AdminSonidoVivo() {
                 value={form.precio}
                 onChange={handleChange}
                 placeholder="0"
-                min="1"
+                min="0"
                 error={errors.precio}
               />
 
@@ -140,7 +140,7 @@ function AdminSonidoVivo() {
                 value={form.precioAnterior}
                 onChange={handleChange}
                 placeholder="Déjalo vacío si no hay oferta"
-                min="1"
+                min="0"
                 error={errors.precioAnterior}
               />
 
@@ -196,14 +196,14 @@ function AdminSonidoVivo() {
           </div>
         </Col>
 
-        <Col xs={12} md={8}>
+        <Col xs={12} lg={8} xxl={9}>
           <div className="p-3 p-md-4 border rounded bg-white shadow-sm">
             <h3 className="h5 mb-3">Productos ({productosCtx.productos.length})</h3>
 
             {productosCtx.productos.length === 0 ? (
               <p className="text-muted mb-0">No hay productos registrados.</p>
             ) : (
-              <ul className="list-group">
+              <ul className="record-grid">
                 {productosCtx.productos.map((p) => {
                   const sinStock = p.stock === 0;
                   const enOferta =
@@ -212,7 +212,7 @@ function AdminSonidoVivo() {
                   return (
                   <li
                     key={p.id}
-                    className={`list-group-item d-flex flex-wrap align-items-center gap-3${
+                    className={`list-group-item record-grid__item d-flex flex-wrap align-items-center gap-3${
                       sinStock ? " list-group-item-danger" : ""
                     }`}
                   >
@@ -235,7 +235,7 @@ function AdminSonidoVivo() {
                         </small>
                       )}
                     </span>
-                    <div className="d-flex gap-2">
+                    <div className="d-flex flex-wrap gap-2">
                       <Boton label="Editar" variant="outline-primary" onClick={() => editar(p)} />
                       <Boton label="Eliminar" variant="danger" onClick={() => eliminar(p)} />
                     </div>

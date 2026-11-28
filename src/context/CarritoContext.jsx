@@ -1,4 +1,6 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
+
+import { useProductosOpcional } from './ProductosContext'
 
 const CarritoContext = createContext(null)
 
@@ -23,47 +25,43 @@ function puedeAgregarMas(producto, cantidadActual) {
 
 export function ProveedorCarrito(props) {
   const [items, setItems] = useState(leerCarrito)
+  const referencia = useRef(items)
+  const catalogo = useProductosOpcional()
+
+  function cambiar(operacion) {
+    const nuevo = operacion(referencia.current)
+    referencia.current = nuevo
+    setItems(nuevo)
+  }
 
   useEffect(() => {
-    try {
-      localStorage.setItem(clave, JSON.stringify(items))
-    } catch {
-    }
+    try { localStorage.setItem(clave, JSON.stringify(items)) } catch {}
   }, [items])
 
-  function add(producto) {
-    const existente = items.find((i) => i.producto.id === producto.id)
-    if (!puedeAgregarMas(producto, existente ? existente.cantidad : 0)) return false
+  useEffect(() => {
+    if (!catalogo || catalogo.cargando || catalogo.error) return
+    cambiar((actual) => actual.map((item) => ({ ...item, producto: catalogo.productos.find((p) => p.id === item.producto.id) ?? { ...item.producto, stock: 0 } })))
+  }, [catalogo?.productos, catalogo?.cargando, catalogo?.error])
 
-    setItems((actual) => {
-      const encontrado = actual.find((i) => i.producto.id === producto.id)
-      if (encontrado) {
-        if (!puedeAgregarMas(producto, encontrado.cantidad)) return actual
-        return actual.map((i) =>
-          i.producto.id === producto.id ? { ...i, cantidad: i.cantidad + 1 } : i,
-        )
-      }
-      return [...actual, { producto, cantidad: 1 }]
-    })
+  function add(producto) {
+    const vigente = catalogo && !catalogo.cargando && !catalogo.error ? catalogo.productos.find((p) => p.id === producto.id) : producto
+    if (!vigente) return false
+    const existente = referencia.current.find((i) => i.producto.id === vigente.id)
+    if (!puedeAgregarMas(vigente, existente?.cantidad ?? 0)) return false
+    cambiar((actual) => existente ? actual.map((i) => i.producto.id === vigente.id ? { producto: vigente, cantidad: i.cantidad + 1 } : i) : [...actual, { producto: vigente, cantidad: 1 }])
     return true
   }
 
   function remove(id) {
-    setItems((actual) => actual.filter((i) => i.producto.id !== id))
+    cambiar((actual) => actual.filter((i) => i.producto.id !== id))
   }
 
   function increment(id) {
-    setItems((actual) =>
-      actual.map((i) =>
-        i.producto.id === id && puedeAgregarMas(i.producto, i.cantidad)
-          ? { ...i, cantidad: i.cantidad + 1 }
-          : i,
-      ),
-    )
+    cambiar((actual) => actual.map((i) => i.producto.id === id && puedeAgregarMas(i.producto, i.cantidad) ? { ...i, cantidad: i.cantidad + 1 } : i))
   }
 
   function vaciar() {
-    setItems([])
+    cambiar(() => [])
   }
 
   const totalItems = items.reduce((suma, i) => suma + i.cantidad, 0)

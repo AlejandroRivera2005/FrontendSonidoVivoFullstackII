@@ -1,31 +1,17 @@
-import { useNavigate } from "react-router-dom";
-import { Container, Row, Col } from "react-bootstrap";
-import Boton from "../atoms/boton/Boton";
+import { Link } from "react-router-dom";
 
-function Footer() {
-  const navigate = useNavigate();
-
+function Footer(props) {
   return (
-    <footer className="bg-dark text-white py-4 mt-auto">
-      <Container>
-        <Row className="align-items-center justify-content-between">
-          
-          <Col xs={12} md={8} className="text-center text-md-start mb-3 mb-md-0">
-            <p className="m-0 text-secondary">
-              © 2026 Sonido Vivo. Todos los derechos reservados.
-            </p>
-          </Col>
-
-          <Col xs={12} md={4} className="text-center text-md-end">
-            <Boton
-              label="Contacto"
-              variant="primary"
-              onClick={() => navigate("/contacto")}
-            />
-          </Col>
-
-        </Row>
-      </Container>
+    <footer className="site-footer">
+      <div className="footer-container">
+        <p>© {new Date().getFullYear()} Sonido Vivo. Todos los derechos reservados.</p>
+        {!props.admin && (
+          <nav className="footer-menu" aria-label="Información de la tienda">
+            <Link to="/quienessomos">Quiénes somos</Link>
+            <Link to="/contacto">Contacto</Link>
+          </nav>
+        )}
+      </div>
     </footer>
   );
 }
